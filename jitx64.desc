@@ -1,0 +1,349 @@
+// the test hello world JIT FOR X64
+
+|.arch x64
+|.actionlist actions
+
+|.globals SPROTO_CODE_
+static void* labels[SPROTO_CODE__MAX];
+
+// call a function with a arg
+|.macro callp, addr
+| mov64  rax, (uintptr_t)addr
+| call   rax
+|.endmacro
+
+
+|.macro print_func, str
+| mov64 rdi, (uintptr_t)str
+| callp printf
+|.endmacro
+
+
+// jit argument register
+
+|.define ST, rdi
+|.define DECODE_DATA, rsi
+|.define DECODE_SIZE, rdx
+|.define DECODE_CB,   rcx
+|.define DECODE_UD,   r8
+
+|.define ENCODE_DATA, rsi
+|.define ENCODE_SIZE, rdx
+|.define ENCODE_CB,   rcx
+|.define ENCODE_UD,   r8
+
+|.macro _pre
+| push rbp
+| push rdi
+| push rsi
+| push r8
+| mov rbp, rsp
+|.endmacro
+
+|.macro _ret
+|->run_done:
+| pop r8
+| pop rsi
+| pop rdi
+| pop rbp
+| ret
+|.endmacro
+
+
+|.macro _return, value
+| mov rax, value
+| jmp ->run_done 
+|.endmacro
+
+
+// argement rdi, rsi, rdx, rcx, r8, r9, rax
+// R_OUT_RET is return value
+|.macro _call_cb, R_cb, ud, tagname, type, index, st, value, length, R_OUT_RET
+| push rdi
+| push rsi
+| push rdx
+| push rcx
+| push r8 
+| push r9
+| push rax
+|
+| mov rdi, ud
+| mov64 rsi, (uintptr_t)tagname
+| mov rdx, type
+| mov rcx, index
+| mov64 r8, (uintptr_t)st
+| mov64 r9, (uintptr_t)value
+| mov rax, length
+| call R_cb
+| mov R_OUT_RET, eax
+| 
+| pop rax
+| pop r9
+| pop r8
+| pop rcx
+| pop rdx
+| pop rsi
+| pop rdi
+|.endmacro
+
+|.type HEADER, uint8_t,   r13
+|.type DATA,   uint8_t,   r14
+|.type RECORD, uint8_t,   r15
+
+|.macro _encode_uint64, u64, data, size, R_out
+|
+| int3 // todo it!!
+|.endmacro
+
+|.macro _fill_size, data, sz, R_out
+| mov eax, sz
+| cmp eax, 0
+| jl <2
+| je <3
+| mov eax, sz
+| mov data[0], al
+| shr eax, 8
+| mov data[1], al
+| shr eax, 8
+| mov data[2], al
+| shr eax, 8
+| mov data[3], al
+| mov R_out, sz
+| add R_out, SIZEOF_LENGTH
+| jmp >1
+|
+|3:
+| mov R_out, 0
+| jmp >1
+|2:
+| mov R_out, -1
+|1:
+|.endmacro
+
+|.macro _encode_integer, u32, data, size, R_out
+| cmp size, SIZEOF_LENGTH + sizeof(uint32_t)
+| jl >1 
+| mov eax, u32
+| mov data[4], al
+| shr eax, 8
+| mov data[5], al
+| shr eax, 8
+| mov data[6], al
+| shr eax, 8
+| mov data[7], al
+| _fill_size data, sizeof(uint32_t), R_out
+| jmp >2
+|
+|1:
+| mov R_out, -1
+|2:
+|.endmacro
+
+
+
+
+void look(){
+  printf("look here!!\n");
+}
+
+
+static int _gen_encode_type(struct sproto_type* st){
+  | mov HEADER, ENCODE_DATA
+  || int header_sz = SIZEOF_HEADER + st->maxn * SIZEOF_FIELD;
+  | cmp ENCODE_SIZE, header_sz
+  | jl >1
+  | mov DATA, HEADER
+  | add DATA, header_sz
+  | sub ENCODE_SIZE, header_sz
+
+  void* tmp_u = &(jit_instance.tmp_u);
+  int size_u = sizeof(jit_instance.tmp_u);
+
+  |.macro _gt_u32, R_out
+  | mov R_out, jit_instance.tmp_u.u32
+  |.endmacro
+
+  |.macro _gt_u64, R_out
+  | mov64 R_out, jit_instance.tmp_u.u64
+  |.endmacro
+  
+  int i;
+  int index = 0;
+  int lasttag = -1;
+  for(i=0; i<st->n; i++){
+    struct field *f = &st->f[i];
+    int type = f->type;
+
+    |.define datasz, r15 
+    |.define sz_64,  r11
+    |.define sz,    r11d
+    |.define value, r12d
+    | xor r11, r11
+    | xor r12, r12
+    | mov sz, -1
+    | mov value, 0
+
+    if(type & SPROTO_TARRAY){
+      printf("TODO IT!!\n");
+      assert(0);
+    } else {
+      switch(type){
+        case SPROTO_TINTEGER:
+        case SPROTO_TBOOLEAN:{
+          | _call_cb DECODE_CB, DECODE_UD, f->name, type, 0, NULL, tmp_u, size_u, sz
+          | cmp sz, 0
+          | jl >1
+          | je >2
+          | cmp sz, sizeof(uint32_t)
+          | jne >3
+          |
+            | _gt_u32 value
+            | cmp value, 0x7fff
+            | jnl >4
+            | add value, 1
+            | sal value, 1
+            | mov sz, 2
+            | jmp >5
+            | 
+            |4:
+            | _gt_u32 r2d
+            | _encode_integer r2d, DATA, ENCODE_SIZE, sz
+            | jmp >5
+          |
+          |3:
+          | cmp sz, sizeof(uint64_t)
+          | jne >1
+          | _encode_uint64 r2, DATA, DECODE_SIZE, sz
+        }break;
+
+        case SPROTO_TSTRING:{
+          assert(0);
+        }break;
+
+        case SPROTO_TSTRUCT: {
+          assert(0);
+        }break;
+
+        default:
+          assert(0);
+      }
+      |5: // switch end
+    }
+    | cmp sz, 0
+    | jl >1
+    | je >2
+    |
+      | cmp value, 0
+      | je >7
+      | add DATA, sz_64
+      | sub ENCODE_SIZE, sz_64
+      |7: 
+      || int header_offset = SIZEOF_HEADER+SIZEOF_FIELD*index;
+      | mov RECORD, HEADER
+      | add RECORD, header_offset
+      int tag = f->tag - lasttag -1;
+      if(tag > 0){
+        // skip tag
+        tag = (tag -1) * 2 + 1;
+        if (tag > 0xffff)
+          return 0;
+        | mov eax, tag
+        | mov RECORD[0], al
+        | shr eax, 8
+        | mov RECORD[1], al
+        || ++index;
+        | add RECORD, SIZEOF_FIELD
+      }
+      ++index;
+      | mov eax, value
+      | mov RECORD[0], al
+      | shr eax, 8  
+      | mov RECORD[1], al
+      || lasttag = f->tag;
+    | 
+    |2: // for next
+  }
+  | mov eax, index
+  | mov HEADER[0], al
+  | shr eax, 8
+  | mov HEADER[1], al
+  |
+  | mov datasz, DATA
+  | sub datasz, HEADER
+  | sub datasz, header_sz
+  || if(index != st->maxn){
+    int _header_sz = SIZEOF_HEADER + index * SIZEOF_FIELD;
+    | add HEADER, _header_sz
+    | mov rdi, HEADER
+    | mov rsi, DATA
+    | mov rdx, datasz
+    | mov64 rax, (uintptr_t)memmove
+    | call rax
+  }
+  || int _ret = SIZEOF_HEADER + index * SIZEOF_FIELD;
+  | add datasz, _ret
+  | _return, datasz
+  |1:
+  | _return, -1
+
+  return 1;
+}
+
+
+static void* _gen_encode(struct sproto_type* st){
+  | _pre
+  
+  || _gen_encode_type(st);
+  
+  | _ret
+
+  void* ret = _jitcode_new(Dst);
+  return ret;
+}
+
+
+static void* _gen_decode(struct sproto_type* st){
+  return NULL;
+}
+
+
+// for test
+
+void* _gen_jit(const char* str, uint8_t* tmp_data){
+  // prepare state
+  _new_env(Dst, actions);
+  //dasm_growpc(Dst, 8);
+   int a =1;
+
+  |.type out, uint8_t, r15
+
+  | mov rax, a
+  | push rbp
+  | push rax
+  | push rdi
+  | push r15
+  | mov rbp, rsp
+  |
+  | mov eax, 0x01020304
+  | mov64 out, (uintptr_t)tmp_data
+  | mov out[0], al
+  | shr eax, 8
+  | mov out[1], al
+  | shr eax, 8
+  | mov out[2], al
+  | shr eax, 8
+  | mov out[3], al
+  |
+  | pop r15
+  | pop rdi
+  | pop rax
+  | pop rbp
+  | ret
+
+  void* ret = _jitcode_new(Dst);
+  _free_env(Dst);
+  return ret;
+}
+
+
+

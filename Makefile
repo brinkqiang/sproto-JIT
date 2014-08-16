@@ -4,7 +4,7 @@ all : sproto.so
 win : sproto.dll
 
 sproto.so : sproto.c lsproto.c
-	gcc -g -Wall -fPIC --shared -o $@ $^
+	gcc -g -Wall -fPIC --shared -dynamiclib -Wl,-undefined,dynamic_lookup -o $@ $^
 
 sproto.dll : sproto.c lsproto.c
 	gcc -O2 -Wall --shared -o $@ $^ -I/usr/local/include -L/usr/local/bin -llua52
