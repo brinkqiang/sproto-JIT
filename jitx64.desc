@@ -36,13 +36,31 @@ static void* labels[SPROTO_CODE__MAX];
 | push rbp
 | push rdi
 | push rsi
+| push rdx
+| push rcx
 | push r8
+| push r9
+| push r10
+| push r11
+| push r12
+| push r13
+| push r14
+| push r15
 | mov rbp, rsp
 |.endmacro
 
 |.macro _ret
 |->run_done:
+| pop r15
+| pop r14
+| pop r13
+| pop r12
+| pop r11
+| pop r10
+| pop r9
 | pop r8
+| pop rcx
+| pop rdx
 | pop rsi
 | pop rdi
 | pop rbp
@@ -65,12 +83,6 @@ static void* labels[SPROTO_CODE__MAX];
 | push rcx
 | push r8 
 | push r9
-| push rax
-| push r11
-| push r12
-| push r13
-| push r14
-| push r15
 |
 | mov rdi, ud
 | mov64 rsi, (uintptr_t)tagname
@@ -78,16 +90,11 @@ static void* labels[SPROTO_CODE__MAX];
 | mov rcx, index
 | mov64 r8, (uintptr_t)st
 | mov64 r9, (uintptr_t)value
-| mov rax, length
+| push length
 | call R_cb
 | mov R_OUT_RET, eax
 |
-| pop r15
-| pop r14
-| pop r13
-| pop r12
-| pop r11 
-| pop rax
+| add rsp, 8 // pop length
 | pop r9
 | pop r8
 | pop rcx
@@ -96,7 +103,7 @@ static void* labels[SPROTO_CODE__MAX];
 | pop rdi
 |.endmacro
 
-|.type HEADER, uint8_t,   r13
+|.type HEADER, uint8_t,   DECODE_DATA
 |.type DATA,   uint8_t,   r14
 |.type RECORD, uint8_t,   r15
 
@@ -151,14 +158,31 @@ static void* labels[SPROTO_CODE__MAX];
 
 
 
+/*
+static int 
+_test_cb(void* ud, const char* tagname, int type, int index, struct sproto_type* st, void* value, int length) {
+  printf("ud = %p tagname = %s type = %d index = %d, st = %p, value = %p length = %d\n",
+    ud, tagname, type, index, st, value, length);  
 
-void look(){
-  printf("look here!!\n");
+  return 1;
+}
+*/
+
+static int _test_encode_type(struct sproto_type* st){
+  | mov al, 0x01
+  | mov HEADER[0], al
+  | mov al, 0x00
+  | mov HEADER[1], al
+  | mov al, 0x24
+  | mov HEADER[2], al
+  | mov al, 0x00
+  | mov HEADER[3], al
+  | _return, 4
+  return 1;
 }
 
 
 static int _gen_encode_type(struct sproto_type* st){
-  | mov HEADER, ENCODE_DATA
   || int header_sz = SIZEOF_HEADER + st->maxn * SIZEOF_FIELD;
   | cmp ENCODE_SIZE, header_sz
   | jl >1
@@ -169,38 +193,48 @@ static int _gen_encode_type(struct sproto_type* st){
   void* tmp_u = &(jit_instance.tmp_u);
   int size_u = sizeof(jit_instance.tmp_u);
 
+  |.type JIT_P, struct sproto_jit, rax
   |.macro _gt_u32, R_out
-  | mov R_out, jit_instance.tmp_u.u32
+  | mov64 JIT_P, (uintptr_t)&(jit_instance) 
+  | mov R_out, JIT_P->tmp_u.u32
   |.endmacro
 
   |.macro _gt_u64, R_out
-  | mov64 R_out, jit_instance.tmp_u.u64
+  | mov64 JIT_P, (uintptr_t)&(jit_instance)
+  | mov64 R_out, JIT_P->tmp_u.u64
   |.endmacro
   
   int i;
-  int index = 0;
-  int lasttag = -1;
+
+  |.define index,   r10
+  |.define lasttag, r13
+  | xor index, index
+  | mov lasttag, -1
+
   for(i=0; i<st->n; i++){
     struct field *f = &st->f[i];
+    int _tag = f->tag;
     int type = f->type;
 
     |.define datasz, r15 
+    |.define tag,    r11
     |.define sz_64,  r11
     |.define sz,    r11d
     |.define value, r12d
     | xor r11, r11
     | xor r12, r12
     | mov sz, -1
-    | mov value, 0
+    | xor value, value
 
     if(type & SPROTO_TARRAY){
-      printf("TODO IT!!\n");
+      printf("array TODO IT!!\n");
       assert(0);
     } else {
       switch(type){
         case SPROTO_TINTEGER:
         case SPROTO_TBOOLEAN:{
-          | _call_cb DECODE_CB, DECODE_UD, f->name, type, 0, NULL, tmp_u, size_u, sz
+          | mov rax, ENCODE_CB
+          | _call_cb rax, DECODE_UD, f->name, type, 0, NULL, tmp_u, size_u, sz
           | cmp sz, 0
           | jl >1
           | je >2
@@ -227,71 +261,94 @@ static int _gen_encode_type(struct sproto_type* st){
         }break;
 
         case SPROTO_TSTRING:{
+          printf("string TODO IT!!\n");
           assert(0);
         }break;
 
         case SPROTO_TSTRUCT: {
+          printf("struct TODO IT!!\n");
           assert(0);
         }break;
 
         default:
-          assert(0);
+          return 0;
       }
       |5: // switch end
     }
+    
     | cmp sz, 0
     | jl >1
     | je >2
     |
       | cmp value, 0
-      | je >7
+      | jne >7
       | add DATA, sz_64
       | sub ENCODE_SIZE, sz_64
       |7: 
-      || int header_offset = SIZEOF_HEADER+SIZEOF_FIELD*index;
-      | mov RECORD, HEADER
-      | add RECORD, header_offset
-      int tag = f->tag - lasttag -1;
-      if(tag > 0){
-        // skip tag
-        tag = (tag -1) * 2 + 1;
-        if (tag > 0xffff)
-          return 0;
-        | mov eax, tag
+      | mov RECORD, index
+      | imul RECORD, SIZEOF_FIELD
+      | add RECORD, SIZEOF_HEADER
+      | add RECORD, HEADER
+      | mov tag, _tag
+      | sub tag, lasttag
+      | sub tag, 1
+      | cmp tag, 0
+      | jle >6
+      |
+        | dec tag
+        | sal tag, 1
+        | inc tag
+        | cmp tag, 0xffff
+        | jge >8
+          | jmp >1
+        |8:
+        | mov rax, tag
         | mov RECORD[0], al
-        | shr eax, 8
+        | shr rax, 8
         | mov RECORD[1], al
-        || ++index;
+        | inc index
         | add RECORD, SIZEOF_FIELD
-      }
-      ++index;
+      |
+      |6:
+      | inc index
       | mov eax, value
       | mov RECORD[0], al
       | shr eax, 8  
       | mov RECORD[1], al
-      || lasttag = f->tag;
+      | mov lasttag, _tag
     | 
     |2: // for next
   }
-  | mov eax, index
+  //| int3
+  | mov rax, index
   | mov HEADER[0], al
-  | shr eax, 8
+  | shr rax, 8
   | mov HEADER[1], al
   |
   | mov datasz, DATA
   | sub datasz, HEADER
   | sub datasz, header_sz
-  || if(index != st->maxn){
-    int _header_sz = SIZEOF_HEADER + index * SIZEOF_FIELD;
-    | add HEADER, _header_sz
+  | mov DATA, HEADER
+
+  | add DATA, header_sz
+  |
+  | mov rcx, index
+  | imul index, SIZEOF_FIELD
+  | cmp rcx, st->maxn
+  | je >9
+  |
+    |
+    | add HEADER, SIZEOF_HEADER
+    | add HEADER, index
     | mov rdi, HEADER
     | mov rsi, DATA
     | mov rdx, datasz
     | mov64 rax, (uintptr_t)memmove
     | call rax
-  }
-  || int _ret = SIZEOF_HEADER + index * SIZEOF_FIELD;
-  | add datasz, _ret
+  |
+  |9:
+  | add datasz, index
+  | add datasz, SIZEOF_HEADER
   | _return, datasz
   |1:
   | _return, -1
@@ -301,13 +358,17 @@ static int _gen_encode_type(struct sproto_type* st){
 
 
 static void* _gen_encode(struct sproto_type* st){
+  _new_env(Dst, actions);
+
   | _pre
-  
-  || _gen_encode_type(st);
-  
+  || int success =  _gen_encode_type(st);
+  |
   | _ret
 
-  void* ret = _jitcode_new(Dst);
+  void* ret = (success)?(_jitcode_new(Dst)):(NULL);
+  
+  _free_env(Dst);
+
   return ret;
 }
 
@@ -315,6 +376,7 @@ static void* _gen_encode(struct sproto_type* st){
 static void* _gen_decode(struct sproto_type* st){
   return NULL;
 }
+
 
 
 // for test
