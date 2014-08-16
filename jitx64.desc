@@ -66,6 +66,11 @@ static void* labels[SPROTO_CODE__MAX];
 | push r8 
 | push r9
 | push rax
+| push r11
+| push r12
+| push r13
+| push r14
+| push r15
 |
 | mov rdi, ud
 | mov64 rsi, (uintptr_t)tagname
@@ -76,7 +81,12 @@ static void* labels[SPROTO_CODE__MAX];
 | mov rax, length
 | call R_cb
 | mov R_OUT_RET, eax
-| 
+|
+| pop r15
+| pop r14
+| pop r13
+| pop r12
+| pop r11 
 | pop rax
 | pop r9
 | pop r8
