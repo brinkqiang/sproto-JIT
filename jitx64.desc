@@ -112,7 +112,7 @@ static void* labels[SPROTO_CODE__MAX];
 | pop rdi
 |.endmacro
 
-|.type HEADER, uint8_t,   DECODE_DATA
+|.type HEADER, uint8_t,   ENCODE_DATA
 |.type DATA,   uint8_t,   r14
 |.type RECORD, uint8_t,   r15
 
@@ -182,6 +182,25 @@ static void* labels[SPROTO_CODE__MAX];
 |2:
 |.endmacro
 
+
+// toward, eax is return value
+|.macro _toword, p
+| xor rax, rax
+| mov al, p[0]
+| mov ah, p[1]
+|.endmacro
+
+// todword, eax is return value
+|.macro _todword, p
+| xor rax, rax
+| mov al, p[2]
+| mov ah, p[3]
+| shl eax, 16
+| mov al, p[0]
+| mov ah, p[1]
+|.endmacro
+
+
 /*
 static int 
 _test_cb(void* ud, const char* tagname, int type, int index, struct sproto_type* st, void* value, int length) {
@@ -206,7 +225,134 @@ static int _test_encode_type(struct sproto_type* st){
 }
 
 static int _gen_decode_type(struct sproto_type* st){
-  return 0;
+  dasm_growpc(Dst, maxpc+=2);
+  unsigned int label_return_error = maxpc-1;
+  unsigned int label_end = maxpc-2;
+
+  assert(SIZEOF_FIELD==2); // for optimize
+
+  |.type stream, uint8_t, DECODE_DATA
+  |.define size, edx // DECODE_SIZE u32
+  |.type datastream, uint8_t, r9
+  |.define d_value, r10d
+  |.define d_tag,   r11d
+  |.define fn,      r12d
+  |.define d_index, r13d
+  |.type tmp64,  uint8_t,   r14
+  |.type tmp32,  uint8_t,   r14d
+
+  |.macro _next_tag
+  |1:
+  | cmp d_index, fn
+  | jge =>(label_end)
+  | inc d_tag
+  | xor tmp64, tmp64
+  | mov tmp32, d_index
+  | shl tmp32, 1
+  | add tmp64, stream
+  | _toword, tmp64
+  | mov d_value, eax
+  | and eax, 1
+  | jp >2
+  |
+    | mov d_value, eax
+    | shr eax, 1
+    | add d_tag, eax 
+    | inc d_index
+    | jmp <1
+  |
+  |2:
+  | inc d_index
+  | shl d_value, 1
+  | dec d_value
+  |.endmacro
+
+
+
+  | cmp DECODE_SIZE, SIZEOF_HEADER
+  |
+    | jl =>(label_return_error)
+  |
+  | _toword, stream  // eax is fn
+  | add stream, SIZEOF_HEADER
+  | sub size, SIZEOF_HEADER
+  | shl eax, 1 // fn * SIZEOF_FIELD
+  | cmp size, eax
+  |
+    | jl =>(label_return_error)
+  |
+  | mov datastream, stream
+  | add datastream, rax
+  | sub size, eax
+  | shr eax, 1
+  |
+  | mov fn, eax
+  | xor d_index, d_index
+  | mov d_tag, -1
+
+  |
+  | _next_tag
+  |
+
+  int i;
+  for(i=0; i<st->n; i++){
+    struct field *f = &st->f[i];
+    int _tag = f->tag;
+    int type = f->type;
+
+    dasm_growpc(Dst, maxpc+=9);
+
+    | cmp d_tag, _tag
+    | jne =>(maxpc-1)
+    |
+    | cmp d_value, 0
+    | jge =>(maxpc-2)
+    | 
+      | cmp size, SIZEOF_LENGTH
+      | jl =>(label_return_error)
+      | _todword, datastream
+      | add eax, SIZEOF_LENGTH
+      | cmp size, eax
+      | jl =>(label_return_error)
+      | add datastream, rax
+      | sub size, eax
+    |
+    |=>(maxpc-2):
+    |
+
+    if(type & SPROTO_TARRAY){
+      printf("DECODE array TODO IT!!\n");
+      assert(0);
+    } else {
+      switch(type){
+        case SPROTO_TINTEGER:
+        case SPROTO_TBOOLEAN: {
+          | cmp d_value, 0
+          | jl =>(maxpc-3)
+          |
+          | 
+          |=>(maxpc-3):
+          |
+        }break;
+
+        default:
+          assert(0);
+      }
+    }
+
+    | _next_tag
+    |
+    |=>(maxpc-1):  // next field
+  }
+
+  |
+  |=>(label_return_error):
+  | _return, -1
+  |
+  |=>(label_end):
+  | _return, 0
+
+  return 1;
 }
 
 
@@ -256,6 +402,7 @@ static int _gen_encode_type(struct sproto_type* st){
     |.define sz_64,  r11
     |.define sz,    r11d
     |.define value, r12d
+
     | xor r11, r11
     | xor r12, r12
     | mov sz, -1
