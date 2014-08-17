@@ -8,7 +8,6 @@ struct sproto_type;
 
 #define SPROTO_JIT
 
-
 #define SPROTO_REQUEST 0
 #define SPROTO_RESPONSE 1
 

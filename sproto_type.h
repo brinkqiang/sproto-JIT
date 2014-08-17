@@ -27,9 +27,9 @@ struct sproto_type {
   struct field *f;
 
   #ifdef SPROTO_JIT
-  // for jit func
-  decode_code decode_func;
-  encode_code encode_func;
+    // for jit func
+    decode_code decode_func;
+    encode_code encode_func;
   #endif
 };
 

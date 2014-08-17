@@ -7,6 +7,9 @@
 #include "sproto.h"
 #include "sproto_type.h"
 
+#ifdef SPROTO_JIT
+#include "sproto_jit.h"
+#endif
 
 struct protocol {
 	const char *name;
@@ -31,6 +34,10 @@ struct sproto {
 	struct sproto_type * type;
 	struct protocol * proto;
 };
+
+
+static int interpreter_sproto_encode(struct sproto_type *st, void * buffer, int size, sproto_callback cb, void *ud);
+
 
 static void
 pool_init(struct pool *p) {
@@ -377,10 +384,15 @@ create_from_bundle(struct sproto *s, const uint8_t * stream, size_t sz) {
 	}
 
 	for (i=0;i<s->type_n;i++) {
-		typedata = import_type(s, &s->type[i], typedata);
+		struct sproto_type* st = &s->type[i];
+		typedata = import_type(s, st, typedata);
 		if (typedata == NULL) {
 			return NULL;
 		}
+
+		#ifdef SPROTO_JIT
+		sproto_jit_gen(st);
+		#endif
 	}
 	for (i=0;i<s->protocol_n;i++) {
 		protocoldata = import_protocol(s, &s->proto[i], protocoldata);
@@ -405,6 +417,7 @@ sproto_create(const void * proto, size_t sz) {
 		pool_release(&s->memory);
 		return NULL;
 	}
+
 	return s;
 }
 
@@ -750,8 +763,36 @@ encode_array(sproto_callback cb, void *ud, struct field *f, uint8_t *data, int s
 	return fill_size(data, sz);
 }
 
+
 int 
 sproto_encode(struct sproto_type *st, void * buffer, int size, sproto_callback cb, void *ud) {
+	// printf("st = %p, buffer = %p, size = %x, cb = %p, ud = %p\n", st, buffer, size, cb, ud);
+
+	#ifdef SPROTO_JIT
+		// st->encode_func = NULL;
+		int ret = 0;
+
+		if(st->encode_func){
+			ret = (st->encode_func)(st, buffer, size, cb, ud);
+		}else {
+			ret =  interpreter_sproto_encode(st, buffer, size, cb, ud);
+		}
+
+		// printf("=========dump buffer [%d] ========\n", ret);
+		// for(int i= 0; i<ret; i++){
+		// 	printf("%.2x ", ((uint8_t*) buffer)[i]);
+		// }
+		// printf("\n");
+		
+		return ret;
+
+	#else
+		return interpreter_sproto_encode(st, buffer, size, cb, ud);
+	#endif
+}
+
+static int 
+interpreter_sproto_encode(struct sproto_type *st, void * buffer, int size, sproto_callback cb, void *ud) {
 	uint8_t * header = buffer;
 	int header_sz = SIZEOF_HEADER + st->maxn * SIZEOF_FIELD;
 	if (size < header_sz)
@@ -777,6 +818,7 @@ sproto_encode(struct sproto_type *st, void * buffer, int size, sproto_callback c
 					uint32_t u32;
 				} u;
 				sz = cb(ud, f->name, type, 0, NULL, &u, sizeof(u));
+				// printf("call back sz: %d u32 = %d\n", sz, u.u32);
 				if (sz < 0)
 					return -1;
 				if (sz == 0)
@@ -785,6 +827,7 @@ sproto_encode(struct sproto_type *st, void * buffer, int size, sproto_callback c
 					if (u.u32 < 0x7fff) {
 						value = (u.u32+1) * 2;
 						sz = 2;	// sz can be any number > 0
+						// printf("value: %d sz = %d\n", value, sz);
 					} else {
 						sz = encode_integer(u.u32, data, size);
 					}

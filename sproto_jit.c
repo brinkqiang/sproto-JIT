@@ -25,9 +25,12 @@ struct sproto_jit {
     uint64_t u64;
     uint32_t u32;
   } tmp_u;
+
+  unsigned int maxpc;
 } jit_instance;
 
 #define Dst   &(jit_instance.ds)
+#define maxpc  jit_instance.maxpc
 #include "jit.h"
 
 
@@ -35,6 +38,9 @@ static void _new_env(dasm_State **state, const void *actionlist){
   dasm_init(state, 1);
   dasm_setupglobal(Dst, labels, SPROTO_CODE__MAX);
   dasm_setup(state, actionlist);
+
+  jit_instance.tmp_u.u64 = 0;
+  maxpc = 0;
 }
 
 static void _free_env(dasm_State ** state){
@@ -71,6 +77,9 @@ static void _jitcode_free(void* code){
 // sproto jit  API
 //------------------------------------------------------------------
 int sproto_jit_gen(struct sproto_type* st){
+  void* encode = _gen_encode(st);
+  st->encode_func = encode;
+  st->decode_func = NULL;
   return 0;
 }
 
@@ -87,6 +96,7 @@ void sproto_jit_free(struct sproto_type* st){
 }
 
 //  for test
+/*
 static uint8_t tmp_data[4] = {0};
 int main(int argc, char const *argv[]){
   dynasm_func func = _gen_jit("hi jit1\n", tmp_data);
@@ -104,4 +114,4 @@ int main(int argc, char const *argv[]){
   return 0;
 }
 
-
+*/
