@@ -1,4 +1,4 @@
-sproto
+sproto-JIT
 ======
 added JIT support for sproto. using [dynasm](http://corsix.github.io/dynasm-doc/index.html). 
 
