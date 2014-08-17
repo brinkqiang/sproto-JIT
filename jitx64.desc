@@ -74,9 +74,17 @@ static void* labels[SPROTO_CODE__MAX];
 |.endmacro
 
 
+|.macro _set_imm_value, value
+| mov64 r9, (uintptr_t)value
+|.endmacro
+
+|.macro _set_rg_value, value
+| mov r9, value
+|.endmacro
+
 // argement rdi, rsi, rdx, rcx, r8, r9, rax
 // R_OUT_RET is return value
-|.macro _call_cb, R_cb, ud, tagname, type, index, st, value, length, R_OUT_RET
+|.macro _call_cb, R_cb, ud, tagname, type, index, st, value, _set_value, length, R_OUT_RET
 | push rdi
 | push rsi
 | push rdx
@@ -84,14 +92,15 @@ static void* labels[SPROTO_CODE__MAX];
 | push r8 
 | push r9
 |
+| mov rax, R_cb
 | mov rdi, ud
 | mov64 rsi, (uintptr_t)tagname
+| mov64 r8, (uintptr_t)st
+| _set_value value
+| push length
 | mov rdx, type
 | mov rcx, index
-| mov64 r8, (uintptr_t)st
-| mov64 r9, (uintptr_t)value
-| push length
-| call R_cb
+| call rax
 | mov R_OUT_RET, eax
 |
 | add rsp, 8 // pop length
@@ -157,6 +166,21 @@ static void* labels[SPROTO_CODE__MAX];
 |.endmacro
 
 
+|.macro _encode_string, cb, ud, f, data, size, R_out
+| cmp size, SIZEOF_LENGTH
+| jl >1
+| add data, SIZEOF_LENGTH
+| sub size, SIZEOF_LENGTH
+| _call_cb cb, ud, f->name, SPROTO_TSTRING, 0, NULL,  data, _set_rg_value, size, R_out
+| sub data, SIZEOF_LENGTH
+| add size, SIZEOF_LENGTH
+| _fill_size data, R_out, R_out
+| jmp >2
+| 
+|1:
+| mov R_out, -1
+|2:
+|.endmacro
 
 /*
 static int 
@@ -181,13 +205,17 @@ static int _test_encode_type(struct sproto_type* st){
   return 1;
 }
 
+static int _gen_decode_type(struct sproto_type* st){
+  return 0;
+}
+
 
 static int _gen_encode_type(struct sproto_type* st){
   assert(SIZEOF_FIELD == 2);
   int header_sz = SIZEOF_HEADER + st->maxn * SIZEOF_FIELD;
 
   dasm_growpc(Dst, ++maxpc);
-  unsigned int label_return_error = maxpc;
+  unsigned int label_return_error = maxpc-1;
 
   | cmp ENCODE_SIZE, header_sz
   | jl =>(label_return_error)
@@ -240,8 +268,7 @@ static int _gen_encode_type(struct sproto_type* st){
       switch(type){
         case SPROTO_TINTEGER:
         case SPROTO_TBOOLEAN:{
-          | mov rax, ENCODE_CB
-          | _call_cb rax, DECODE_UD, f->name, type, 0, NULL, tmp_u, size_u, sz
+          | _call_cb ENCODE_CB, ENCODE_UD, f->name, type, 0, NULL, tmp_u, _set_imm_value, size_u, sz
           | cmp sz, 0
           | jl =>(label_return_error)
           | je =>(maxpc-2)
@@ -264,12 +291,11 @@ static int _gen_encode_type(struct sproto_type* st){
           |=>(maxpc-3):
           | cmp sz, sizeof(uint64_t)
           | jne =>(label_return_error)
-          | _encode_uint64 r2, DATA, DECODE_SIZE, sz
+          | _encode_uint64 r2, DATA, ENCODE_SIZE, sz
         }break;
 
         case SPROTO_TSTRING:{
-          printf("string TODO IT!!\n");
-          assert(0);
+          | _encode_string ENCODE_CB, ENCODE_UD, f, DATA, ENCODE_SIZE, sz
         }break;
 
         case SPROTO_TSTRUCT: {
@@ -306,7 +332,7 @@ static int _gen_encode_type(struct sproto_type* st){
         | sal tag, 1
         | inc tag
         | cmp tag, 0xffff
-        | jge =>(maxpc-8)
+        | jle =>(maxpc-8)
           | jmp =>(label_return_error)
         |=>(maxpc-8):
         | mov rax, tag
@@ -364,6 +390,18 @@ static int _gen_encode_type(struct sproto_type* st){
   return 1;
 }
 
+static void* _gen_decode(struct sproto_type* st){
+  _new_env(Dst, actions);
+
+  | _pre
+  || int success = _gen_decode_type(st);
+  |
+  | ret
+  
+  void* ret = (success)?(_jitcode_new(Dst)):(NULL);  
+  _free_env(Dst);
+  return ret;
+}
 
 static void* _gen_encode(struct sproto_type* st){
   _new_env(Dst, actions);
@@ -374,9 +412,7 @@ static void* _gen_encode(struct sproto_type* st){
   | _ret
 
   void* ret = (success)?(_jitcode_new(Dst)):(NULL);
-  
   _free_env(Dst);
-
   return ret;
 }
 
