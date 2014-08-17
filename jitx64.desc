@@ -417,12 +417,6 @@ static void* _gen_encode(struct sproto_type* st){
 }
 
 
-static void* _gen_decode(struct sproto_type* st){
-  return NULL;
-}
-
-
-
 // for test
 
 void* _gen_jit(const char* str, uint8_t* tmp_data){
