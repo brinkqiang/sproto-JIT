@@ -115,8 +115,8 @@ static void* labels[SPROTO_CODE__MAX];
 |.macro _fill_size, data, sz, R_out
 | mov eax, sz
 | cmp eax, 0
-| jl <2
-| je <3
+| jl <4
+| je <5
 | mov eax, sz
 | mov data[0], al
 | shr eax, 8
@@ -127,14 +127,14 @@ static void* labels[SPROTO_CODE__MAX];
 | mov data[3], al
 | mov R_out, sz
 | add R_out, SIZEOF_LENGTH
-| jmp >1
+| jmp >3
 |
-|3:
+|5:
 | mov R_out, 0
-| jmp >1
-|2:
+| jmp >3
+|4:
 | mov R_out, -1
-|1:
+|3:
 |.endmacro
 
 |.macro _encode_integer, u32, data, size, R_out
@@ -183,9 +183,15 @@ static int _test_encode_type(struct sproto_type* st){
 
 
 static int _gen_encode_type(struct sproto_type* st){
-  || int header_sz = SIZEOF_HEADER + st->maxn * SIZEOF_FIELD;
+  assert(SIZEOF_FIELD == 2);
+  int header_sz = SIZEOF_HEADER + st->maxn * SIZEOF_FIELD;
+
+  dasm_growpc(Dst, ++maxpc);
+  unsigned int label_return_error = maxpc;
+
   | cmp ENCODE_SIZE, header_sz
-  | jl >1
+  | jl =>(label_return_error)
+  |
   | mov DATA, HEADER
   | add DATA, header_sz
   | sub ENCODE_SIZE, header_sz
@@ -215,6 +221,7 @@ static int _gen_encode_type(struct sproto_type* st){
     struct field *f = &st->f[i];
     int _tag = f->tag;
     int type = f->type;
+    dasm_growpc(Dst, maxpc+=9);
 
     |.define datasz, r15 
     |.define tag,    r11
@@ -236,27 +243,27 @@ static int _gen_encode_type(struct sproto_type* st){
           | mov rax, ENCODE_CB
           | _call_cb rax, DECODE_UD, f->name, type, 0, NULL, tmp_u, size_u, sz
           | cmp sz, 0
-          | jl >1
-          | je >2
+          | jl =>(label_return_error)
+          | je =>(maxpc-2)
           | cmp sz, sizeof(uint32_t)
-          | jne >3
+          | jne =>(maxpc-3)
           |
             | _gt_u32 value
             | cmp value, 0x7fff
-            | jnl >4
-            | add value, 1
+            | jnl =>(maxpc-4)
+            | inc value
             | sal value, 1
             | mov sz, 2
-            | jmp >5
+            | jmp =>(maxpc-5)
             | 
-            |4:
+            |=>(maxpc-4):
             | _gt_u32 r2d
             | _encode_integer r2d, DATA, ENCODE_SIZE, sz
-            | jmp >5
+            | jmp =>(maxpc-5)
           |
-          |3:
+          |=>(maxpc-3):
           | cmp sz, sizeof(uint64_t)
-          | jne >1
+          | jne =>(label_return_error)
           | _encode_uint64 r2, DATA, DECODE_SIZE, sz
         }break;
 
@@ -273,35 +280,35 @@ static int _gen_encode_type(struct sproto_type* st){
         default:
           return 0;
       }
-      |5: // switch end
+      |=>(maxpc-5): // switch end
     }
     
     | cmp sz, 0
-    | jl >1
-    | je >2
+    | jl =>(label_return_error)
+    | je =>(maxpc-2)
     |
       | cmp value, 0
-      | jne >7
+      | jne =>(maxpc-7)
       | add DATA, sz_64
       | sub ENCODE_SIZE, sz_64
-      |7: 
+      |=>(maxpc-7): 
       | mov RECORD, index
-      | imul RECORD, SIZEOF_FIELD
+      | sal RECORD, 1  // for replace imul RECORD, SIZEOF_FIELD
       | add RECORD, SIZEOF_HEADER
       | add RECORD, HEADER
       | mov tag, _tag
       | sub tag, lasttag
       | sub tag, 1
       | cmp tag, 0
-      | jle >6
+      | jle =>(maxpc-6)
       |
         | dec tag
         | sal tag, 1
         | inc tag
         | cmp tag, 0xffff
-        | jge >8
-          | jmp >1
-        |8:
+        | jge =>(maxpc-8)
+          | jmp =>(label_return_error)
+        |=>(maxpc-8):
         | mov rax, tag
         | mov RECORD[0], al
         | shr rax, 8
@@ -309,7 +316,7 @@ static int _gen_encode_type(struct sproto_type* st){
         | inc index
         | add RECORD, SIZEOF_FIELD
       |
-      |6:
+      |=>(maxpc-6):
       | inc index
       | mov eax, value
       | mov RECORD[0], al
@@ -317,7 +324,7 @@ static int _gen_encode_type(struct sproto_type* st){
       | mov RECORD[1], al
       | mov lasttag, _tag
     | 
-    |2: // for next
+    |=>(maxpc-2): // for next
   }
   //| int3
   | mov rax, index
@@ -333,9 +340,9 @@ static int _gen_encode_type(struct sproto_type* st){
   | add DATA, header_sz
   |
   | mov rcx, index
-  | imul index, SIZEOF_FIELD
+  | sal index, 1 // for replace  imul index, SIZEOF_FIELD
   | cmp rcx, st->maxn
-  | je >9
+  | je =>(maxpc-9)
   |
     |
     | add HEADER, SIZEOF_HEADER
@@ -346,11 +353,12 @@ static int _gen_encode_type(struct sproto_type* st){
     | mov64 rax, (uintptr_t)memmove
     | call rax
   |
-  |9:
+  |=>(maxpc-9):
   | add datasz, index
   | add datasz, SIZEOF_HEADER
   | _return, datasz
-  |1:
+  |
+  |=>(label_return_error):
   | _return, -1
 
   return 1;
