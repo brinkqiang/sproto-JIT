@@ -46,7 +46,7 @@ static void* labels[SPROTO_CODE__MAX];
 | push r13
 | push r14
 | push r15
-| mov rbp, rsp
+| mov rbp, rsp   
 |.endmacro
 
 |.macro _ret
@@ -64,6 +64,7 @@ static void* labels[SPROTO_CODE__MAX];
 | pop rsi
 | pop rdi
 | pop rbp
+| int3
 | ret
 |.endmacro
 
@@ -85,6 +86,7 @@ static void* labels[SPROTO_CODE__MAX];
 // argement rdi, rsi, rdx, rcx, r8, r9, rax
 // R_OUT_RET is return value
 |.macro _call_cb, R_cb, ud, tagname, type, index, st, value, _set_value, length, R_OUT_RET
+| sub rsp, 8
 | push rdi
 | push rsi
 | push rdx
@@ -110,6 +112,7 @@ static void* labels[SPROTO_CODE__MAX];
 | pop rdx
 | pop rsi
 | pop rdi
+| add rsp, 8  // for 16 aligned
 |.endmacro
 
 |.type HEADER, uint8_t,   ENCODE_DATA
@@ -201,16 +204,34 @@ static void* labels[SPROTO_CODE__MAX];
 |.endmacro
 
 
-/*
-static int 
-_test_cb(void* ud, const char* tagname, int type, int index, struct sproto_type* st, void* value, int length) {
-  printf("ud = %p tagname = %s type = %d index = %d, st = %p, value = %p length = %d\n",
-    ud, tagname, type, index, st, value, length);  
+|.type JIT_P, struct sproto_jit, rax
+|.macro _gt_u32, R_out
+| mov64 JIT_P, (uintptr_t)&(jit_instance) 
+| mov R_out, JIT_P->tmp_u.u32
+|.endmacro
 
-  return 1;
+|.macro _gt_u64, R_out
+| mov64 JIT_P, (uintptr_t)&(jit_instance)
+| mov64 R_out, JIT_P->tmp_u.u64
+|.endmacro
+
+|.macro _st_u64, v
+| mov64, JIT_P, (uintptr_t)&(jit_instance)
+| mov JIT_P->tmp_u.u64, v
+|.endmacro
+
+
+|.macro _todo
+| mov64 rax, (uintptr_t)(_todo_func)
+| call rax
+|.endmacro
+
+static void _todo_func(){
+  printf("todo it!!");
+  assert(0);
 }
-*/
 
+/*
 static int _test_encode_type(struct sproto_type* st){
   | mov al, 0x01
   | mov HEADER[0], al
@@ -223,23 +244,31 @@ static int _test_encode_type(struct sproto_type* st){
   | _return, 4
   return 1;
 }
+*/
 
 static int _gen_decode_type(struct sproto_type* st){
   dasm_growpc(Dst, maxpc+=2);
   unsigned int label_return_error = maxpc-1;
   unsigned int label_end = maxpc-2;
 
+
+  void* tmp_u = &(jit_instance.tmp_u);
+  int size_u = sizeof(jit_instance.tmp_u);
+
+  printf("jit_stance.tmp_u = %p\n", tmp_u);
+
   assert(SIZEOF_FIELD==2); // for optimize
 
   |.type stream, uint8_t, DECODE_DATA
   |.define size, edx // DECODE_SIZE u32
   |.type datastream, uint8_t, r9
+  |.define d_value64, r10
   |.define d_value, r10d
   |.define d_tag,   r11d
   |.define fn,      r12d
   |.define d_index, r13d
-  |.type tmp64,  uint8_t,   r14
-  |.type tmp32,  uint8_t,   r14d
+  |.type tmp64,  uint8_t,   rdi
+  |.define tmp32,   edi
 
   |.macro _next_tag
   |1:
@@ -263,12 +292,11 @@ static int _gen_decode_type(struct sproto_type* st){
   |
   |2:
   | inc d_index
-  | shl d_value, 1
+  | shr d_value, 1
   | dec d_value
   |.endmacro
 
-
-
+  |
   | cmp DECODE_SIZE, SIZEOF_HEADER
   |
     | jl =>(label_return_error)
@@ -287,7 +315,9 @@ static int _gen_decode_type(struct sproto_type* st){
   | shr eax, 1
   |
   | mov fn, eax
+  | xor d_value64, d_value64
   | xor d_index, d_index
+  | xor r10, r10
   | mov d_tag, -1
 
   |
@@ -329,9 +359,14 @@ static int _gen_decode_type(struct sproto_type* st){
         case SPROTO_TBOOLEAN: {
           | cmp d_value, 0
           | jl =>(maxpc-3)
+          | _st_u64 d_value64
+          | _call_cb DECODE_CB,  DECODE_UD, f->name, f->type, 0, NULL, tmp_u, _set_imm_value, size_u, eax
+          | jmp =>(maxpc-4) 
           |
-          | 
           |=>(maxpc-3):
+          | _todo
+          |
+          |=>(maxpc-4):
           |
         }break;
 
@@ -373,16 +408,6 @@ static int _gen_encode_type(struct sproto_type* st){
   void* tmp_u = &(jit_instance.tmp_u);
   int size_u = sizeof(jit_instance.tmp_u);
 
-  |.type JIT_P, struct sproto_jit, rax
-  |.macro _gt_u32, R_out
-  | mov64 JIT_P, (uintptr_t)&(jit_instance) 
-  | mov R_out, JIT_P->tmp_u.u32
-  |.endmacro
-
-  |.macro _gt_u64, R_out
-  | mov64 JIT_P, (uintptr_t)&(jit_instance)
-  | mov64 R_out, JIT_P->tmp_u.u64
-  |.endmacro
   
   int i;
 
@@ -542,8 +567,9 @@ static void* _gen_decode(struct sproto_type* st){
 
   | _pre
   || int success = _gen_decode_type(st);
+  //int success = 1;
   |
-  | ret
+  | _ret
   
   void* ret = (success)?(_jitcode_new(Dst)):(NULL);  
   _free_env(Dst);
@@ -565,42 +591,27 @@ static void* _gen_encode(struct sproto_type* st){
 
 
 // for test
-
+/*
 void* _gen_jit(const char* str, uint8_t* tmp_data){
   // prepare state
   _new_env(Dst, actions);
-  //dasm_growpc(Dst, 8);
-   int a =1;
 
-  |.type out, uint8_t, r15
+  uint8_t _data[] = {0x01, 0x00};
 
-  | mov rax, a
-  | push rbp
-  | push rax
-  | push rdi
-  | push r15
-  | mov rbp, rsp
-  |
-  | mov eax, 0x01020304
-  | mov64 out, (uintptr_t)tmp_data
-  | mov out[0], al
-  | shr eax, 8
-  | mov out[1], al
-  | shr eax, 8
-  | mov out[2], al
-  | shr eax, 8
-  | mov out[3], al
-  |
-  | pop r15
-  | pop rdi
-  | pop rax
-  | pop rbp
-  | ret
+  |.type v_tmp, uint8_t, r8
+  |.type v_src, uint8_t, rcx
+
+  | int3
+  | mov64 v_src, (uintptr_t)_data
+  | mov v_tmp, v_src
+  | mov ah, v_tmp[0]
+  | mov ah, v_src[0]
+
 
   void* ret = _jitcode_new(Dst);
   _free_env(Dst);
   return ret;
 }
-
+*/
 
 

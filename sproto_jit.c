@@ -78,8 +78,10 @@ static void _jitcode_free(void* code){
 //------------------------------------------------------------------
 int sproto_jit_gen(struct sproto_type* st){
   void* encode = _gen_encode(st);
+  void* decode = _gen_decode(st);
+
   st->encode_func = encode;
-  st->decode_func = NULL;
+  st->decode_func = decode;
   return 0;
 }
 
@@ -113,5 +115,4 @@ int main(int argc, char const *argv[]){
   printf(" call end!!!!\n");
   return 0;
 }
-
 */

@@ -37,7 +37,7 @@ struct sproto {
 
 
 static int interpreter_sproto_encode(struct sproto_type *st, void * buffer, int size, sproto_callback cb, void *ud);
-
+static int interpreter_sproto_decode(struct sproto_type *st, const void * data, int size, sproto_callback cb, void *ud);
 
 static void
 pool_init(struct pool *p) {
@@ -763,13 +763,35 @@ encode_array(sproto_callback cb, void *ud, struct field *f, uint8_t *data, int s
 	return fill_size(data, sz);
 }
 
+int
+sproto_decode(struct sproto_type *st, const void * data, int size, sproto_callback cb, void *ud) {
+	printf("st = %p, data = %p, size = %x, cb = %p, ud = %p\n", st, data, size, cb, ud);
+
+	#ifdef SPROTO_JIT
+	// st->decode_func = NULL;
+	int ret = 0;
+		// ret = interpreter_sproto_decode(st, data, size, cb, ud);
+		// ret = (st->decode_func)(st, data, size, cb, ud);
+
+		if(st->decode_func){
+			ret = (st->decode_func)(st, data, size, cb, ud);
+			printf("call success!!!\n");
+		} else {
+			ret = interpreter_sproto_decode(st, data, size, cb, ud);
+		}
+		return ret;
+	#else
+		return interpreter_sproto_decode(st, data, size, cb, ud);
+	#endif
+}
+
 
 int 
 sproto_encode(struct sproto_type *st, void * buffer, int size, sproto_callback cb, void *ud) {
 	// printf("st = %p, buffer = %p, size = %x, cb = %p, ud = %p\n", st, buffer, size, cb, ud);
 
 	#ifdef SPROTO_JIT
-		// st->encode_func = NULL;
+		st->encode_func = NULL;
 		int ret = 0;
 
 		if(st->encode_func){
@@ -778,11 +800,11 @@ sproto_encode(struct sproto_type *st, void * buffer, int size, sproto_callback c
 			ret =  interpreter_sproto_encode(st, buffer, size, cb, ud);
 		}
 
-		// printf("=========dump buffer [%d] ========\n", ret);
-		// for(int i= 0; i<ret; i++){
-		// 	printf("%.2x ", ((uint8_t*) buffer)[i]);
-		// }
-		// printf("\n");
+		printf("=========dump buffer [%d] ========\n", ret);
+		for(int i= 0; i<ret; i++){
+			printf("%.2x ", ((uint8_t*) buffer)[i]);
+		}
+		printf("\n");
 		
 		return ret;
 
@@ -963,8 +985,15 @@ decode_array(sproto_callback cb, void *ud, struct field *f, uint8_t * stream) {
 	return 0;
 }
 
-int
-sproto_decode(struct sproto_type *st, const void * data, int size, sproto_callback cb, void *ud) {
+static int
+interpreter_sproto_decode(struct sproto_type *st, const void * data, int size, sproto_callback cb, void *ud) {
+	printf("=====decode [%d]=======\n", size);
+	int j;
+	for(j=0; j<size; j++){
+		printf("%.2x ", ((uint8_t*)data)[j]);
+	}
+	printf("\n");
+
 	if (size < SIZEOF_HEADER)
 		return -1;
 	uint8_t * stream = (void *)data;
@@ -1036,6 +1065,8 @@ sproto_decode(struct sproto_type *st, const void * data, int size, sproto_callba
 			return -1;
 		} else {
 			uint64_t v = value;
+			printf("cb = %p,  ud = %p, name = %p, type = %d, 0, NULL, &v = %p, length = %zd\n", 
+				cb, ud, f->name, f->type, &v, sizeof(v));
 			cb(ud, f->name, f->type, 0, NULL, &v, sizeof(v));
 		}
 	}
