@@ -32,6 +32,7 @@ static void* labels[SPROTO_CODE__MAX];
 |.define ENCODE_CB,   rcx
 |.define ENCODE_UD,   r8
 
+
 |.macro _pre
 | push rbp
 | push rdi
@@ -46,7 +47,6 @@ static void* labels[SPROTO_CODE__MAX];
 | push r13
 | push r14
 | push r15
-| mov rbp, rsp   
 |.endmacro
 
 |.macro _ret
@@ -64,10 +64,8 @@ static void* labels[SPROTO_CODE__MAX];
 | pop rsi
 | pop rdi
 | pop rbp
-| int3
 | ret
 |.endmacro
-
 
 |.macro _return, value
 | mov rax, value
@@ -119,10 +117,6 @@ static void* labels[SPROTO_CODE__MAX];
 |.type DATA,   uint8_t,   r14
 |.type RECORD, uint8_t,   r15
 
-|.macro _encode_uint64, u64, data, size, R_out
-|
-| int3 // todo it!!
-|.endmacro
 
 |.macro _fill_size, data, sz, R_out
 | mov eax, sz
@@ -147,6 +141,35 @@ static void* labels[SPROTO_CODE__MAX];
 |4:
 | mov R_out, -1
 |3:
+|.endmacro
+
+
+|.macro _encode_uint64, u64, data, size, R_out
+| cmp size, SIZEOF_LENGTH + sizeof(uint64_t)
+| jl >1
+| mov rax, u64
+| mov data[4], al
+| shr rax, 8
+| mov data[5], al
+| shr rax, 8
+| mov data[6], al
+| shr rax, 8
+| mov data[7], al
+| shr rax, 8
+| mov data[8], al
+| shr rax, 8
+| mov data[9], al
+| shr rax, 8
+| mov data[10], al
+| shr rax, 8
+| mov data[11], al
+| shr rax, 8
+| _fill_size data, sizeof(uint64_t), R_out
+| jmp >2
+|
+|1:
+| mov R_out, -1
+|2:
 |.endmacro
 
 |.macro _encode_integer, u32, data, size, R_out
@@ -204,7 +227,7 @@ static void* labels[SPROTO_CODE__MAX];
 |.endmacro
 
 
-|.type JIT_P, struct sproto_jit, rax
+|.type JIT_P, struct sproto_jit, r9
 |.macro _gt_u32, R_out
 | mov64 JIT_P, (uintptr_t)&(jit_instance) 
 | mov R_out, JIT_P->tmp_u.u32
@@ -212,12 +235,36 @@ static void* labels[SPROTO_CODE__MAX];
 
 |.macro _gt_u64, R_out
 | mov64 JIT_P, (uintptr_t)&(jit_instance)
-| mov64 R_out, JIT_P->tmp_u.u64
+| mov   R_out, JIT_P->tmp_u.u64
 |.endmacro
 
 |.macro _st_u64, v
-| mov64, JIT_P, (uintptr_t)&(jit_instance)
+| mov64 JIT_P, (uintptr_t)&(jit_instance)
 | mov JIT_P->tmp_u.u64, v
+|.endmacro
+
+|.macro _st_low, v32
+| mov64 JIT_P, (uintptr_t)&(jit_instance)
+| mov JIT_P->tmp_u.v64_op.low, v32
+|.endmacro
+
+|.macro _st_hi, v32
+| mov64 JIT_P, (uintptr_t)&(jit_instance)
+| mov JIT_P->tmp_u.v64_op.hi, v32
+|.endmacro
+
+
+// tmp32 is parameter
+|.macro _expand64
+| xor rax, rax
+| mov eax, tmp32
+| cmp tmp32, 0
+| jge >5
+| xor rax, rax
+| not rax
+| shl rax, 32
+| or rax, tmp64
+|5:
 |.endmacro
 
 
@@ -251,20 +298,19 @@ static int _gen_decode_type(struct sproto_type* st){
   unsigned int label_return_error = maxpc-1;
   unsigned int label_end = maxpc-2;
 
-
   void* tmp_u = &(jit_instance.tmp_u);
   int size_u = sizeof(jit_instance.tmp_u);
-
-  printf("jit_stance.tmp_u = %p\n", tmp_u);
 
   assert(SIZEOF_FIELD==2); // for optimize
 
   |.type stream, uint8_t, DECODE_DATA
+  |.type currentdata, uint8_t, r11
+
   |.define size, edx // DECODE_SIZE u32
-  |.type datastream, uint8_t, r9
+  |.type datastream, uint8_t, r15
   |.define d_value64, r10
   |.define d_value, r10d
-  |.define d_tag,   r11d
+  |.define d_tag,   r14d
   |.define fn,      r12d
   |.define d_index, r13d
   |.type tmp64,  uint8_t,   rdi
@@ -284,7 +330,7 @@ static int _gen_decode_type(struct sproto_type* st){
   | and eax, 1
   | jp >2
   |
-    | mov d_value, eax
+    | mov eax, d_value
     | shr eax, 1
     | add d_tag, eax 
     | inc d_index
@@ -335,12 +381,14 @@ static int _gen_decode_type(struct sproto_type* st){
     | cmp d_tag, _tag
     | jne =>(maxpc-1)
     |
+    | mov currentdata, datastream
     | cmp d_value, 0
     | jge =>(maxpc-2)
     | 
       | cmp size, SIZEOF_LENGTH
       | jl =>(label_return_error)
-      | _todword, datastream
+      | mov tmp64, datastream
+      | _todword, tmp64
       | add eax, SIZEOF_LENGTH
       | cmp size, eax
       | jl =>(label_return_error)
@@ -364,9 +412,47 @@ static int _gen_decode_type(struct sproto_type* st){
           | jmp =>(maxpc-4) 
           |
           |=>(maxpc-3):
-          | _todo
+          | mov tmp64, currentdata
+          | _todword, tmp64
+          | cmp eax, sizeof(uint32_t)
+          |
+            | jne >1
+          |
+          | add tmp64, SIZEOF_LENGTH
+          | _todword, tmp64
+          | mov tmp32, eax
+          | _expand64
+          | mov tmp64, rax
+          | _st_u64, tmp64
+          | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, 0, NULL, tmp_u, _set_imm_value, size_u, eax
+          | jmp =>(maxpc-4)
+          |1:
+          | cmp eax, sizeof(uint64_t)
+          |
+            | jne =>(label_return_error)
+          |
+          | mov tmp64, currentdata
+          | add tmp64, SIZEOF_LENGTH
+          | _todword tmp64
+          | _st_low rax
+          | add tmp64, sizeof(uint32_t)
+          | _toword tmp64
+          | _st_hi rax
+          | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, 0, NULL, tmp_u, _set_imm_value, size_u, eax
           |
           |=>(maxpc-4):
+          |
+        }break;
+
+        case SPROTO_TSTRING:
+        case SPROTO_TSTRUCT:{
+          | mov tmp64, currentdata 
+          | _todword, tmp64
+          | add currentdata, SIZEOF_LENGTH
+          | mov r10, rax
+          | _call_cb DECODE_CB, DECODE_UD, f->name, f->type, 0, f->st, currentdata, _set_rg_value, r10, eax
+          | cmp rax, 0
+          | jne =>(label_return_error)
           |
         }break;
 
@@ -427,6 +513,7 @@ static int _gen_encode_type(struct sproto_type* st){
     |.define sz_64,  r11
     |.define sz,    r11d
     |.define value, r12d
+    |.define value64, r12
 
     | xor r11, r11
     | xor r12, r12
@@ -448,22 +535,24 @@ static int _gen_encode_type(struct sproto_type* st){
           | jne =>(maxpc-3)
           |
             | _gt_u32 value
-            | cmp value, 0x7fff
-            | jnl =>(maxpc-4)
+            | cmp value, 0
+            | jl =>(maxpc-4)
             | inc value
             | sal value, 1
             | mov sz, 2
             | jmp =>(maxpc-5)
             | 
             |=>(maxpc-4):
-            | _gt_u32 r2d
-            | _encode_integer r2d, DATA, ENCODE_SIZE, sz
+            | _encode_integer value, DATA, ENCODE_SIZE, sz
+            | xor value, value
             | jmp =>(maxpc-5)
           |
           |=>(maxpc-3):
           | cmp sz, sizeof(uint64_t)
           | jne =>(label_return_error)
-          | _encode_uint64 r2, DATA, ENCODE_SIZE, sz
+          | _gt_u64, value64
+          | _encode_uint64 value64, DATA, ENCODE_SIZE, sz
+          | xor value64, value64
         }break;
 
         case SPROTO_TSTRING:{
