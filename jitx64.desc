@@ -34,15 +34,11 @@ static void* labels[SPROTO_CODE__MAX];
 
 
 |.macro _pre
+| sub rsp, 8
 | push rbp
+| push rbx
 | push rdi
 | push rsi
-| push rdx
-| push rcx
-| push r8
-| push r9
-| push r10
-| push r11
 | push r12
 | push r13
 | push r14
@@ -55,15 +51,11 @@ static void* labels[SPROTO_CODE__MAX];
 | pop r14
 | pop r13
 | pop r12
-| pop r11
-| pop r10
-| pop r9
-| pop r8
-| pop rcx
-| pop rdx
 | pop rsi
 | pop rdi
+| pop rbx
 | pop rbp
+| add rsp, 8
 | ret
 |.endmacro
 
@@ -243,6 +235,11 @@ static void* labels[SPROTO_CODE__MAX];
 | mov JIT_P->tmp_u.u64, v
 |.endmacro
 
+|.macro _st_u32, v
+| mov64 JIT_P, (uintptr_t)&(jit_instance)
+| mov JIT_P->tmp_u.u32, v
+|.endmacro
+
 |.macro _st_low, v32
 | mov64 JIT_P, (uintptr_t)&(jit_instance)
 | mov JIT_P->tmp_u.v64_op.low, v32
@@ -267,33 +264,125 @@ static void* labels[SPROTO_CODE__MAX];
 |5:
 |.endmacro
 
+|.type   stream,      uint8_t,  DECODE_DATA
+|.type   currentdata, uint8_t,  r11
+|.type   tmp64,       uint8_t,  rdi
+|.define tmp32,                 edi
+|.define tmp8,                  r7b
 
-|.macro _todo
-| mov64 rax, (uintptr_t)(_todo_func)
-| call rax
-|.endmacro
+static int
+_gen_decode_array(struct field* f, unsigned int label_return_error){
+  | mov tmp64, currentdata
+  | _todword tmp64
+  | add currentdata, SIZEOF_LENGTH
+  
+  void* tmp_u = &(jit_instance.tmp_u);
+  int size_u = sizeof(jit_instance.tmp_u);
 
-static void _todo_func(){
-  printf("todo it!!");
-  assert(0);
-}
+  assert(sizeof(uint32_t) == 4);
+  assert(sizeof(uint64_t) == 8);
+  dasm_growpc(Dst, maxpc+=2);
 
-/*
-static int _test_encode_type(struct sproto_type* st){
-  | mov al, 0x01
-  | mov HEADER[0], al
-  | mov al, 0x00
-  | mov HEADER[1], al
-  | mov al, 0x24
-  | mov HEADER[2], al
-  | mov al, 0x00
-  | mov HEADER[3], al
-  | _return, 4
+  unsigned int label_decode_array_end = maxpc -1;
+
+  int type = f->type & ~SPROTO_TARRAY;
+  switch(type){
+    case SPROTO_TINTEGER: {
+      | cmp rax, 1
+      | jl =>(label_return_error)
+      | mov tmp8, currentdata[0] // len
+      | inc currentdata
+      | dec rax  // sz
+      | cmp tmp8, sizeof(uint32_t)
+      | jne >1
+      |
+        | mov rbp, rax
+        | and rax, 3
+        | jnz =>(label_return_error)
+        | shr rbp, 2
+        | xor rbx, rbx
+        | sub currentdata, sizeof(uint32_t)
+        |2:
+        | add currentdata, sizeof(uint32_t)
+        | mov tmp64, currentdata
+        | _todword tmp64
+        | mov tmp32, eax
+        | _expand64
+        | mov tmp64, rax
+        | _st_u64, tmp64
+        | mov tmp64, currentdata    // back currentdata
+        |
+        | inc rbx
+        | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, rbx, NULL, tmp_u, _set_imm_value, size_u, eax
+        | mov currentdata, tmp64
+        | cmp rbp, rbx
+        | jg <2
+        | jmp =>(label_decode_array_end)
+      |
+      |1:
+      | cmp tmp8, sizeof(uint64_t)
+      | jne =>(label_return_error)
+      | 
+        | mov rbp, rax
+        | and rax, 7
+        | jnz =>(label_return_error)
+        | shr rbp, 3
+        | xor rbx, rbx
+        | sub currentdata, sizeof(uint64_t)
+        |3:
+        | add currentdata, sizeof(uint64_t)
+        | mov tmp64, currentdata
+        | _todword tmp64
+        | _st_low rax
+        | add tmp64, sizeof(uint32_t)
+        | _todword tmp64
+        | _st_hi rax
+        | mov tmp64, currentdata    // back currentdata
+        |
+        | inc rbx
+        | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, rbx, NULL, tmp_u, _set_imm_value, size_u, eax
+        | mov currentdata, tmp64
+        | cmp rbp, rbx
+        | jg <3
+        | jmp =>(label_decode_array_end)
+      |
+
+    }break;
+    
+    case SPROTO_TBOOLEAN: {
+      | mov rbp, rax
+      | xor rbx, rbx
+      | mov tmp64, currentdata
+      |
+      |4:
+      | xor rax, rax
+      | mov al, tmp64[0]
+      | _st_u32 rax
+      |
+      | inc rbx
+      | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TBOOLEAN, rbx, NULL, tmp_u, _set_imm_value, size_u, eax
+      | inc tmp64
+      | cmp rbp, rbx
+      | jg <4
+      | jmp =>(label_decode_array_end)
+    }break;
+
+    case SPROTO_TSTRING:
+    case SPROTO_TSTRUCT: {
+      assert(0);
+    }break;
+
+    default:
+      return 0;
+  }
+
+  |=>(label_decode_array_end):
+  |
   return 1;
 }
-*/
 
-static int _gen_decode_type(struct sproto_type* st){
+static int 
+_gen_decode_type(struct sproto_type* st){
   dasm_growpc(Dst, maxpc+=2);
   unsigned int label_return_error = maxpc-1;
   unsigned int label_end = maxpc-2;
@@ -303,9 +392,6 @@ static int _gen_decode_type(struct sproto_type* st){
 
   assert(SIZEOF_FIELD==2); // for optimize
 
-  |.type stream, uint8_t, DECODE_DATA
-  |.type currentdata, uint8_t, r11
-
   |.define size, edx // DECODE_SIZE u32
   |.type datastream, uint8_t, r15
   |.define d_value64, r10
@@ -313,8 +399,6 @@ static int _gen_decode_type(struct sproto_type* st){
   |.define d_tag,   r14d
   |.define fn,      r12d
   |.define d_index, r13d
-  |.type tmp64,  uint8_t,   rdi
-  |.define tmp32,   edi
 
   |.macro _next_tag
   |1:
@@ -399,8 +483,8 @@ static int _gen_decode_type(struct sproto_type* st){
     |
 
     if(type & SPROTO_TARRAY){
-      printf("DECODE array TODO IT!!\n");
-      assert(0);
+      int success = _gen_decode_array(f, label_return_error);
+      if(! success) return success;
     } else {
       switch(type){
         case SPROTO_TINTEGER:
@@ -477,7 +561,8 @@ static int _gen_decode_type(struct sproto_type* st){
 }
 
 
-static int _gen_encode_type(struct sproto_type* st){
+static int 
+_gen_encode_type(struct sproto_type* st){
   assert(SIZEOF_FIELD == 2);
   int header_sz = SIZEOF_HEADER + st->maxn * SIZEOF_FIELD;
 
@@ -522,7 +607,7 @@ static int _gen_encode_type(struct sproto_type* st){
 
     if(type & SPROTO_TARRAY){
       printf("array TODO IT!!\n");
-      assert(0);
+       // assert(0);
     } else {
       switch(type){
         case SPROTO_TINTEGER:
@@ -651,7 +736,8 @@ static int _gen_encode_type(struct sproto_type* st){
   return 1;
 }
 
-static void* _gen_decode(struct sproto_type* st){
+static void* 
+_gen_decode(struct sproto_type* st){
   _new_env(Dst, actions);
 
   | _pre
@@ -665,7 +751,8 @@ static void* _gen_decode(struct sproto_type* st){
   return ret;
 }
 
-static void* _gen_encode(struct sproto_type* st){
+static void* 
+_gen_encode(struct sproto_type* st){
   _new_env(Dst, actions);
 
   | _pre
