@@ -84,12 +84,12 @@ static void* labels[SPROTO_CODE__MAX];
 | push r8 
 | push r9
 |
+| push length
 | mov rax, R_cb
 | mov rdi, ud
 | mov64 rsi, (uintptr_t)tagname
 | mov64 r8, (uintptr_t)st
 | _set_value value
-| push length
 | mov rdx, type
 | mov rcx, index
 | call rax
@@ -369,7 +369,32 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
 
     case SPROTO_TSTRING:
     case SPROTO_TSTRUCT: {
-      assert(0);
+      | mov rbp, rax
+      | mov rbx, 1
+      | mov tmp64, currentdata
+      |
+      |5:
+      | cmp rbp, 0
+      | jle =>(label_decode_array_end)
+      | cmp rbp, SIZEOF_LENGTH
+      | jl =>(label_return_error)
+      | _todword tmp64
+      | add tmp64, SIZEOF_LENGTH
+      | sub rbp, SIZEOF_LENGTH
+      |
+      | cmp rax, rbp
+      | jg =>(label_return_error)
+      |
+      | mov r9, rax
+      | mov currentdata, tmp64
+      | _call_cb DECODE_CB, DECODE_UD, f->name, type, rbx, f->st, currentdata, _set_rg_value, r9, eax
+      | cmp eax, 0
+      | jne =>(label_return_error)
+      | sub rbp, r9
+      | add tmp64, r9
+      | inc rbx
+      | jmp <5
+
     }break;
 
     default:
