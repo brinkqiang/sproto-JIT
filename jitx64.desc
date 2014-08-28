@@ -874,7 +874,6 @@ _gen_decode(struct sproto_type* st){
 
   | _pre
   || int success = _gen_decode_type(st);
-  //int success = 1;
   |
   | _ret
   
@@ -896,29 +895,3 @@ _gen_encode(struct sproto_type* st){
   _free_env(Dst);
   return ret;
 }
-
-
-// for test
-/*
-void* _gen_jit(const char* str, uint8_t* tmp_data){
-  // prepare state
-  _new_env(Dst, actions);
-
-  uint8_t _data[] = {0x01, 0x00};
-
-  |.type v_tmp, uint8_t, r8
-  |.type v_src, uint8_t, rcx
-
-  | mov64 v_src, (uintptr_t)_data
-  | mov v_tmp, v_src
-  | mov ah, v_tmp[0]
-  | mov ah, v_src[0]
-
-
-  void* ret = _jitcode_new(Dst);
-  _free_env(Dst);
-  return ret;
-}
-*/
-
-
