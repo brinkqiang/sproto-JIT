@@ -19,6 +19,8 @@ static void  _free_env(dasm_State ** state);
 static void* _jitcode_new(dasm_State** state);
 static void  _jitcode_free(void* code);
 
+uint8_t * encode_integer_array(sproto_callback cb, void *ud, struct field *f, uint8_t *buffer, int size);
+
 struct sproto_jit {
   dasm_State* ds;
   union {
@@ -56,7 +58,7 @@ static void _free_env(dasm_State ** state){
 static void* _jitcode_new(dasm_State** state){
   size_t size;
   assert(dasm_link(state, &size)==DASM_S_OK);
-  printf("_jitcode_new size: %zd\n", size);
+  // printf("_jitcode_new size: %zd\n", size);
 
   char *mem = (char*)mmap(NULL, size + sizeof(size_t),
                           PROT_READ | PROT_WRITE,
@@ -101,28 +103,3 @@ void sproto_jit_free(struct sproto_type* st){
     st->encode_func = NULL;
   }
 }
-
-//  for test
-/*
-static uint8_t tmp_data[4] = {0};
-int main(int argc, char const *argv[]){
-  // dynasm_func func = _gen_jit("hi jit1\n", tmp_data);
-  // printf("func = %p\n", func);
-
-  // printf("%d %d %d %d\n", tmp_data[0], tmp_data[1], tmp_data[2], tmp_data[3]);
-  // func();
-  // printf("%d %d %d %d\n", tmp_data[0], tmp_data[1], tmp_data[2], tmp_data[3]);
-
-  // // func = _gen_jit("hi jit2\n");
-  // // printf("func = %p\n", func);
-  // // func();
-
-  // printf(" call end!!!!\n");
-
-  jit_instance.tmp_u.v64_op.hi = 0x01;
-  jit_instance.tmp_u.v64_op.low = 0x02;
-
-  printf("u64 = %zd\n", jit_instance.tmp_u.u64);
-  return 0;
-}
-*/

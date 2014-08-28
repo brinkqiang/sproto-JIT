@@ -200,6 +200,29 @@ static void* labels[SPROTO_CODE__MAX];
 |2:
 |.endmacro
 
+// not jit
+|.macro _encode_integer_array, cb, ud, f, buffer, size
+| push rdi
+| push rsi
+| push rdx
+| push rcx
+| push r8
+|
+| mov rdi, cb
+| mov rsi, ud
+| mov64 rdx, (uintptr_t)f
+| mov rcx, buffer
+| mov r8, size
+| mov64 rax, (uintptr_t)encode_integer_array
+|
+| call rax
+|
+| pop r8
+| pop rcx
+| pop rdx
+| pop rsi
+| pop rdi
+|.endmacro
 
 // toward, eax is return value
 |.macro _toword, p
@@ -602,13 +625,14 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
   | add ea_buffer, SIZEOF_LENGTH
 
   void* tmp_u = &(jit_instance.tmp_u);
-  int size_u = sizeof(jit_instance.tmp_u);
 
   int type = f->type & ~SPROTO_TARRAY;
   switch(type){
     case SPROTO_TINTEGER:
-        printf("TODO IT!!!");
-        assert(0);
+        | _encode_integer_array ENCODE_CB, ENCODE_UD, f, ea_buffer, ea_size
+        | mov ea_buffer, rax
+        | cmp ea_buffer, 0
+        | je =>(label_return_error)
       break;
 
     case SPROTO_TBOOLEAN:{
