@@ -13,14 +13,7 @@ static void* labels[SPROTO_CODE__MAX];
 |.endmacro
 
 
-|.macro print_func, str
-| mov64 rdi, (uintptr_t)str
-| callp printf
-|.endmacro
-
-
 // jit argument register
-
 |.define ST, rdi
 |.define DECODE_DATA, rsi
 |.define DECODE_SIZE, rdx

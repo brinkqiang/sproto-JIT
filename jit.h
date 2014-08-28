@@ -14,7 +14,7 @@
 #endif
 #line 4 "jitx64.desc"
 //|.actionlist actions
-static const unsigned char actions[3014] = {
+static const unsigned char actions[2999] = {
   76,137,223,72,49,192,138,135,233,138,167,233,193,224,16,138,135,233,138,167,
   233,73,129,195,239,255,72,131,252,248,1,15,140,245,65,138,187,233,73,252,
   255,195,72,252,255,200,64,128,252,255,235,15,133,244,247,72,137,197,72,131,
@@ -158,8 +158,7 @@ static const unsigned char actions[3014] = {
   252,246,76,137,252,250,72,184,237,237,252,255,208,249,73,1,223,73,129,199,
   239,76,137,252,248,252,233,244,10,249,72,199,192,252,255,252,255,252,255,
   252,255,252,233,244,10,255,72,131,252,236,8,85,83,87,86,65,84,65,85,65,86,
-  65,87,255,248,10,65,95,65,94,65,93,65,92,94,95,91,93,72,131,196,8,195,255,
-  72,185,237,237,73,137,200,65,138,160,233,138,161,233,255
+  65,87,255,248,10,65,95,65,94,65,93,65,92,94,95,91,93,72,131,196,8,195,255
 };
 
 #line 5 "jitx64.desc"
@@ -179,14 +178,7 @@ static void* labels[SPROTO_CODE__MAX];
 //|.endmacro
 
 
-//|.macro print_func, str
-//| mov64 rdi, (uintptr_t)str
-//| callp printf
-//|.endmacro
-
-
 // jit argument register
-
 //|.define ST, rdi
 //|.define DECODE_DATA, rsi
 //|.define DECODE_SIZE, rdx
@@ -273,13 +265,13 @@ static void* labels[SPROTO_CODE__MAX];
 
 //|.type HEADER, uint8_t,   ENCODE_DATA
 #define Dt1(_V) (int)(ptrdiff_t)&(((uint8_t *)0)_V)
-#line 109 "jitx64.desc"
+#line 102 "jitx64.desc"
 //|.type DATA,   uint8_t,   r14
 #define Dt2(_V) (int)(ptrdiff_t)&(((uint8_t *)0)_V)
-#line 110 "jitx64.desc"
+#line 103 "jitx64.desc"
 //|.type RECORD, uint8_t,   r15
 #define Dt3(_V) (int)(ptrdiff_t)&(((uint8_t *)0)_V)
-#line 111 "jitx64.desc"
+#line 104 "jitx64.desc"
 
 
 //|.macro _fill_size, data, sz, R_out
@@ -416,7 +408,7 @@ static void* labels[SPROTO_CODE__MAX];
 
 //|.type JIT_P, struct sproto_jit, r9
 #define Dt4(_V) (int)(ptrdiff_t)&(((struct sproto_jit *)0)_V)
-#line 246 "jitx64.desc"
+#line 239 "jitx64.desc"
 //|.macro _gt_u32, R_out
 //| mov64 JIT_P, (uintptr_t)&(jit_instance) 
 //| mov R_out, JIT_P->tmp_u.u32
@@ -463,13 +455,13 @@ static void* labels[SPROTO_CODE__MAX];
 
 //|.type   stream,      uint8_t,  DECODE_DATA
 #define Dt5(_V) (int)(ptrdiff_t)&(((uint8_t *)0)_V)
-#line 291 "jitx64.desc"
+#line 284 "jitx64.desc"
 //|.type   currentdata, uint8_t,  r11
 #define Dt6(_V) (int)(ptrdiff_t)&(((uint8_t *)0)_V)
-#line 292 "jitx64.desc"
+#line 285 "jitx64.desc"
 //|.type   tmp64,       uint8_t,  rdi
 #define Dt7(_V) (int)(ptrdiff_t)&(((uint8_t *)0)_V)
-#line 293 "jitx64.desc"
+#line 286 "jitx64.desc"
 //|.define tmp32,                 edi
 //|.define tmp8,                  r7b
 
@@ -479,7 +471,7 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
   //| _todword tmp64
   //| add currentdata, SIZEOF_LENGTH
   dasm_put(Dst, 0, Dt7([2]), Dt7([3]), Dt7([0]), Dt7([1]), SIZEOF_LENGTH);
-#line 301 "jitx64.desc"
+#line 294 "jitx64.desc"
   
   void* tmp_u = &(jit_instance.tmp_u);
   int size_u = sizeof(jit_instance.tmp_u);
@@ -516,7 +508,7 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
         //| mov tmp64, rax
         //| _st_u64, tmp64
         dasm_put(Dst, 26, (label_return_error), Dt6([0]), sizeof(uint32_t), (label_return_error), sizeof(uint32_t), sizeof(uint32_t), Dt7([2]), Dt7([3]), Dt7([0]), Dt7([1]), (unsigned int)((uintptr_t)&(jit_instance)), (unsigned int)(((uintptr_t)&(jit_instance))>>32));
-#line 336 "jitx64.desc"
+#line 329 "jitx64.desc"
         //| mov tmp64, currentdata    // back currentdata
         //|
         //| inc rbx
@@ -539,7 +531,7 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
         //|3:
         //| add currentdata, sizeof(uint64_t)
         dasm_put(Dst, 146, Dt4(->tmp_u.u64), size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), (unsigned int)((uintptr_t)tmp_u), (unsigned int)(((uintptr_t)tmp_u)>>32), SPROTO_TINTEGER, (label_decode_array_end), sizeof(uint64_t), (label_return_error), (label_return_error), sizeof(uint64_t));
-#line 357 "jitx64.desc"
+#line 350 "jitx64.desc"
         //| mov tmp64, currentdata
         //| _todword tmp64
         //| _st_low rax
@@ -551,14 +543,14 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
         //| inc rbx
         //| _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, rbx, NULL, tmp_u, _set_imm_value, size_u, eax
         dasm_put(Dst, 268, sizeof(uint64_t), Dt7([2]), Dt7([3]), Dt7([0]), Dt7([1]), (unsigned int)((uintptr_t)&(jit_instance)), (unsigned int)(((uintptr_t)&(jit_instance))>>32), Dt4(->tmp_u.v64_op.low), sizeof(uint32_t), Dt7([2]), Dt7([3]), Dt7([0]), Dt7([1]), (unsigned int)((uintptr_t)&(jit_instance)), (unsigned int)(((uintptr_t)&(jit_instance))>>32), Dt4(->tmp_u.v64_op.hi), size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), (unsigned int)((uintptr_t)tmp_u), (unsigned int)(((uintptr_t)tmp_u)>>32));
-#line 367 "jitx64.desc"
+#line 360 "jitx64.desc"
         //| mov currentdata, tmp64
         //| cmp rbp, rbx
         //| jg <3
         //| jmp =>(label_decode_array_end)
       //|
       dasm_put(Dst, 372, SPROTO_TINTEGER, (label_decode_array_end));
-#line 372 "jitx64.desc"
+#line 365 "jitx64.desc"
 
     }break;
     
@@ -579,7 +571,7 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
       //| jg <4
       //| jmp =>(label_decode_array_end)
       dasm_put(Dst, 415, Dt7([0]), (unsigned int)((uintptr_t)&(jit_instance)), (unsigned int)(((uintptr_t)&(jit_instance))>>32), Dt4(->tmp_u.u32), size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), (unsigned int)((uintptr_t)tmp_u), (unsigned int)(((uintptr_t)tmp_u)>>32), SPROTO_TBOOLEAN, (label_decode_array_end));
-#line 391 "jitx64.desc"
+#line 384 "jitx64.desc"
     }break;
 
     case SPROTO_TSTRING:
@@ -607,12 +599,12 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
       //| jne =>(label_return_error)
       //| sub rbp, r9
       dasm_put(Dst, 520, (label_decode_array_end), SIZEOF_LENGTH, (label_return_error), Dt7([2]), Dt7([3]), Dt7([0]), Dt7([1]), SIZEOF_LENGTH, SIZEOF_LENGTH, (label_return_error), (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)f->st), (unsigned int)(((uintptr_t)f->st)>>32), type, (label_return_error));
-#line 417 "jitx64.desc"
+#line 410 "jitx64.desc"
       //| add tmp64, r9
       //| inc rbx
       //| jmp <5
       dasm_put(Dst, 659);
-#line 420 "jitx64.desc"
+#line 413 "jitx64.desc"
 
     }break;
 
@@ -623,7 +615,7 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
   //|=>(label_decode_array_end):
   //|
   dasm_put(Dst, 674, (label_decode_array_end));
-#line 429 "jitx64.desc"
+#line 422 "jitx64.desc"
   return 1;
 }
 
@@ -641,7 +633,7 @@ _gen_decode_type(struct sproto_type* st){
   //|.define size, edx // DECODE_SIZE u32
   //|.type datastream, uint8_t, r15
 #define Dt8(_V) (int)(ptrdiff_t)&(((uint8_t *)0)_V)
-#line 445 "jitx64.desc"
+#line 438 "jitx64.desc"
   //|.define d_value64, r10
   //|.define d_value, r10d
   //|.define d_tag,   r14d
@@ -698,13 +690,13 @@ _gen_decode_type(struct sproto_type* st){
   //| xor r10, r10
   //| mov d_tag, -1
   dasm_put(Dst, 676, SIZEOF_HEADER, (label_return_error), Dt5([0]), Dt5([1]), SIZEOF_HEADER, SIZEOF_HEADER, (label_return_error));
-#line 500 "jitx64.desc"
+#line 493 "jitx64.desc"
 
   //|
   //| _next_tag
   //|
   dasm_put(Dst, 743, (label_end), Dt7([0]), Dt7([1]));
-#line 504 "jitx64.desc"
+#line 497 "jitx64.desc"
 
   int i;
   for(i=0; i<st->n; i++){
@@ -734,7 +726,7 @@ _gen_decode_type(struct sproto_type* st){
     //|=>(maxpc-2):
     //|
     dasm_put(Dst, 819, _tag, (maxpc-1), (maxpc-2), SIZEOF_LENGTH, (label_return_error), Dt7([2]), Dt7([3]), Dt7([0]), Dt7([1]), SIZEOF_LENGTH, (label_return_error), (maxpc-2));
-#line 532 "jitx64.desc"
+#line 525 "jitx64.desc"
 
     if(type & SPROTO_TARRAY){
       int success = _gen_decode_array(f, label_return_error);
@@ -754,7 +746,7 @@ _gen_decode_type(struct sproto_type* st){
           //| _todword, tmp64
           //| cmp eax, sizeof(uint32_t)
           dasm_put(Dst, 883, (maxpc-3), (unsigned int)((uintptr_t)&(jit_instance)), (unsigned int)(((uintptr_t)&(jit_instance))>>32), Dt4(->tmp_u.u64), size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), (unsigned int)((uintptr_t)tmp_u), (unsigned int)(((uintptr_t)tmp_u)>>32), f->type, (maxpc-4), (maxpc-3), Dt7([2]), Dt7([3]), Dt7([0]), Dt7([1]));
-#line 550 "jitx64.desc"
+#line 543 "jitx64.desc"
           //|
             //| jne >1
           //|
@@ -766,7 +758,7 @@ _gen_decode_type(struct sproto_type* st){
           //| _st_u64, tmp64
           //| _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, 0, NULL, tmp_u, _set_imm_value, size_u, eax
           dasm_put(Dst, 990, sizeof(uint32_t), SIZEOF_LENGTH, Dt7([2]), Dt7([3]), Dt7([0]), Dt7([1]), (unsigned int)((uintptr_t)&(jit_instance)), (unsigned int)(((uintptr_t)&(jit_instance))>>32), Dt4(->tmp_u.u64), size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), (unsigned int)((uintptr_t)tmp_u), (unsigned int)(((uintptr_t)tmp_u)>>32));
-#line 560 "jitx64.desc"
+#line 553 "jitx64.desc"
           //| jmp =>(maxpc-4)
           //|1:
           //| cmp eax, sizeof(uint64_t)
@@ -781,13 +773,13 @@ _gen_decode_type(struct sproto_type* st){
           //| _toword tmp64
           //| _st_hi rax
           dasm_put(Dst, 1098, SPROTO_TINTEGER, (maxpc-4), sizeof(uint64_t), (label_return_error), SIZEOF_LENGTH, Dt7([2]), Dt7([3]), Dt7([0]), Dt7([1]), (unsigned int)((uintptr_t)&(jit_instance)), (unsigned int)(((uintptr_t)&(jit_instance))>>32), Dt4(->tmp_u.v64_op.low), sizeof(uint32_t), Dt7([0]), Dt7([1]), (unsigned int)((uintptr_t)&(jit_instance)), (unsigned int)(((uintptr_t)&(jit_instance))>>32));
-#line 573 "jitx64.desc"
+#line 566 "jitx64.desc"
           //| _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, 0, NULL, tmp_u, _set_imm_value, size_u, eax
           //|
           //|=>(maxpc-4):
           //|
           dasm_put(Dst, 1193, Dt4(->tmp_u.v64_op.hi), size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), (unsigned int)((uintptr_t)tmp_u), (unsigned int)(((uintptr_t)tmp_u)>>32), SPROTO_TINTEGER, (maxpc-4));
-#line 577 "jitx64.desc"
+#line 570 "jitx64.desc"
         }break;
 
         case SPROTO_TSTRING:
@@ -801,7 +793,7 @@ _gen_decode_type(struct sproto_type* st){
           //| jne =>(label_return_error)
           //|
           dasm_put(Dst, 1264, Dt7([2]), Dt7([3]), Dt7([0]), Dt7([1]), SIZEOF_LENGTH, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)f->st), (unsigned int)(((uintptr_t)f->st)>>32), f->type, (label_return_error));
-#line 589 "jitx64.desc"
+#line 582 "jitx64.desc"
         }break;
 
         default:
@@ -813,7 +805,7 @@ _gen_decode_type(struct sproto_type* st){
     //|
     //|=>(maxpc-1):  // next field
     dasm_put(Dst, 1365, (label_end), Dt7([0]), Dt7([1]), (maxpc-1));
-#line 599 "jitx64.desc"
+#line 592 "jitx64.desc"
   }
 
   //|
@@ -823,7 +815,7 @@ _gen_decode_type(struct sproto_type* st){
   //|=>(label_end):
   //| _return, 0
   dasm_put(Dst, 1442, (label_return_error), (label_end));
-#line 607 "jitx64.desc"
+#line 600 "jitx64.desc"
 
   return 1;
 }
@@ -831,7 +823,7 @@ _gen_decode_type(struct sproto_type* st){
 
 //|.type   ea_buffer, uint8_t, r15
 #define Dt9(_V) (int)(ptrdiff_t)&(((uint8_t *)0)_V)
-#line 613 "jitx64.desc"
+#line 606 "jitx64.desc"
 //|.define ea_index, rbp
 //|.define ea_size, tmp64
 //|.define sz_64,  r11
@@ -846,7 +838,7 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
   //| mov ea_buffer, DATA
   //| add ea_buffer, SIZEOF_LENGTH
   dasm_put(Dst, 1471, SIZEOF_LENGTH, (label_return_error), SIZEOF_LENGTH, SIZEOF_LENGTH);
-#line 626 "jitx64.desc"
+#line 619 "jitx64.desc"
 
   void* tmp_u = &(jit_instance.tmp_u);
 
@@ -858,7 +850,7 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
         //| cmp ea_buffer, 0
         //| je =>(label_return_error)
         dasm_put(Dst, 1496, (unsigned int)((uintptr_t)f), (unsigned int)(((uintptr_t)f)>>32), (unsigned int)((uintptr_t)encode_integer_array), (unsigned int)(((uintptr_t)encode_integer_array)>>32), (label_return_error));
-#line 636 "jitx64.desc"
+#line 629 "jitx64.desc"
       break;
 
     case SPROTO_TBOOLEAN:{
@@ -877,7 +869,7 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
         //| jne >3
         //| mov al, 0
         dasm_put(Dst, 1545, sizeof(uint32_t), (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)f->st), (unsigned int)(((uintptr_t)f->st)>>32), (unsigned int)((uintptr_t)tmp_u), (unsigned int)(((uintptr_t)tmp_u)>>32), type, (label_return_error), (label_return_error), Dt9([0]), (unsigned int)((uintptr_t)&(jit_instance)), (unsigned int)(((uintptr_t)&(jit_instance))>>32), Dt4(->tmp_u.u32));
-#line 653 "jitx64.desc"
+#line 646 "jitx64.desc"
         //| mov ea_buffer[0], al 
         //|3:
         //| dec ea_size
@@ -887,7 +879,7 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
         //|
         //|2:
         dasm_put(Dst, 1659, Dt9([0]));
-#line 661 "jitx64.desc"
+#line 654 "jitx64.desc"
       }break;
 
     default:{
@@ -904,7 +896,7 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
         //| sub ea_buffer, SIZEOF_LENGTH
         //| _fill_size ea_buffer, r10d, eax
         dasm_put(Dst, 1686, SIZEOF_LENGTH, (label_return_error), SIZEOF_LENGTH, SIZEOF_LENGTH, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)f->st), (unsigned int)(((uintptr_t)f->st)>>32), type, (label_return_error), SIZEOF_LENGTH);
-#line 676 "jitx64.desc"
+#line 669 "jitx64.desc"
         //| add ea_buffer, SIZEOF_LENGTH
         //| add ea_buffer, r10
         //| sub ea_size, r10
@@ -914,7 +906,7 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
         //|2:
         //| sub ea_buffer, SIZEOF_LENGTH
         dasm_put(Dst, 1807, Dt9([0]), Dt9([1]), Dt9([2]), Dt9([3]), SIZEOF_LENGTH, SIZEOF_LENGTH, SIZEOF_LENGTH);
-#line 684 "jitx64.desc"
+#line 677 "jitx64.desc"
       }break;
   }
 
@@ -927,10 +919,10 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
   //|1:
   //| mov sz, 0
   dasm_put(Dst, 1895, SIZEOF_LENGTH, Dt2([0]), Dt2([1]), Dt2([2]), Dt2([3]), SIZEOF_LENGTH);
-#line 695 "jitx64.desc"
+#line 688 "jitx64.desc"
   //|2:
   dasm_put(Dst, 2003);
-#line 696 "jitx64.desc"
+#line 689 "jitx64.desc"
 
   return 1;
 }
@@ -950,7 +942,7 @@ _gen_encode_type(struct sproto_type* st){
   //| add DATA, header_sz
   //| sub ENCODE_SIZE, header_sz
   dasm_put(Dst, 2012, header_sz, (label_return_error), header_sz, header_sz);
-#line 714 "jitx64.desc"
+#line 707 "jitx64.desc"
 
   void* tmp_u = &(jit_instance.tmp_u);
   int size_u = sizeof(jit_instance.tmp_u);
@@ -963,7 +955,7 @@ _gen_encode_type(struct sproto_type* st){
   //| xor index, index
   //| mov lasttag, -1
   dasm_put(Dst, 2034);
-#line 725 "jitx64.desc"
+#line 718 "jitx64.desc"
 
   for(i=0; i<st->n; i++){
     struct field *f = &st->f[i];
@@ -981,7 +973,7 @@ _gen_encode_type(struct sproto_type* st){
     //| mov sz, -1
     //| xor value, value
     dasm_put(Dst, 2049);
-#line 741 "jitx64.desc"
+#line 734 "jitx64.desc"
 
     if(type & SPROTO_TARRAY){
       int ret = _gen_encode_array(f, label_return_error);
@@ -1002,7 +994,7 @@ _gen_encode_type(struct sproto_type* st){
             //| jl =>(maxpc-4)
             //| inc value
             dasm_put(Dst, 2069, size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), (unsigned int)((uintptr_t)tmp_u), (unsigned int)(((uintptr_t)tmp_u)>>32), type, (label_return_error), (maxpc-2), sizeof(uint32_t), (maxpc-3), (unsigned int)((uintptr_t)&(jit_instance)), (unsigned int)(((uintptr_t)&(jit_instance))>>32), Dt4(->tmp_u.u32), (maxpc-4));
-#line 760 "jitx64.desc"
+#line 753 "jitx64.desc"
             //| sal value, 1
             //| mov sz, 2
             //| jmp =>(maxpc-5)
@@ -1010,7 +1002,7 @@ _gen_encode_type(struct sproto_type* st){
             //|=>(maxpc-4):
             //| _encode_integer value, DATA, ENCODE_SIZE, sz
             dasm_put(Dst, 2171, (maxpc-5), (maxpc-4), SIZEOF_LENGTH + sizeof(uint32_t), Dt2([4]), Dt2([5]), Dt2([6]), Dt2([7]), sizeof(uint32_t), sizeof(uint32_t), Dt2([0]), Dt2([1]), Dt2([2]), Dt2([3]));
-#line 766 "jitx64.desc"
+#line 759 "jitx64.desc"
             //| xor value, value
             //| jmp =>(maxpc-5)
           //|
@@ -1019,27 +1011,27 @@ _gen_encode_type(struct sproto_type* st){
           //| jne =>(label_return_error)
           //| _gt_u64, value64
           dasm_put(Dst, 2267, sizeof(uint32_t), SIZEOF_LENGTH, (maxpc-5), (maxpc-3), sizeof(uint64_t), (label_return_error), (unsigned int)((uintptr_t)&(jit_instance)), (unsigned int)(((uintptr_t)&(jit_instance))>>32));
-#line 773 "jitx64.desc"
+#line 766 "jitx64.desc"
           //| _encode_uint64 value64, DATA, ENCODE_SIZE, sz
           dasm_put(Dst, 2342, Dt4(->tmp_u.u64), SIZEOF_LENGTH + sizeof(uint64_t), Dt2([4]), Dt2([5]), Dt2([6]), Dt2([7]), Dt2([8]), Dt2([9]), Dt2([10]), Dt2([11]), sizeof(uint64_t), sizeof(uint64_t), Dt2([0]), Dt2([1]));
-#line 774 "jitx64.desc"
+#line 767 "jitx64.desc"
           //| xor value64, value64
           dasm_put(Dst, 2450, Dt2([2]), Dt2([3]), sizeof(uint64_t), SIZEOF_LENGTH);
-#line 775 "jitx64.desc"
+#line 768 "jitx64.desc"
         }break;
 
         case SPROTO_TSTRING:{
           //| _encode_buffer ENCODE_CB, ENCODE_UD, SPROTO_TSTRING, f->name, NULL, DATA, ENCODE_SIZE, sz
           dasm_put(Dst, 2523, SIZEOF_LENGTH, SIZEOF_LENGTH, SIZEOF_LENGTH, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), SPROTO_TSTRING, SIZEOF_LENGTH, SIZEOF_LENGTH, Dt2([0]), Dt2([1]), Dt2([2]), Dt2([3]));
           dasm_put(Dst, 2659, SIZEOF_LENGTH);
-#line 779 "jitx64.desc"
+#line 772 "jitx64.desc"
         }break;
 
         case SPROTO_TSTRUCT: {
           //| _encode_buffer ENCODE_CB, ENCODE_UD, SPROTO_TSTRUCT, f->name, f->st, DATA, ENCODE_SIZE, sz
           dasm_put(Dst, 2523, SIZEOF_LENGTH, SIZEOF_LENGTH, SIZEOF_LENGTH, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)f->st), (unsigned int)(((uintptr_t)f->st)>>32), SPROTO_TSTRUCT, SIZEOF_LENGTH, SIZEOF_LENGTH, Dt2([0]), Dt2([1]), Dt2([2]), Dt2([3]));
           dasm_put(Dst, 2659, SIZEOF_LENGTH);
-#line 783 "jitx64.desc"
+#line 776 "jitx64.desc"
         }break;
 
         default:
@@ -1047,7 +1039,7 @@ _gen_encode_type(struct sproto_type* st){
       }
       //|=>(maxpc-5): // switch end
       dasm_put(Dst, 674, (maxpc-5));
-#line 789 "jitx64.desc"
+#line 782 "jitx64.desc"
     }
     
     //| cmp sz, 0
@@ -1086,7 +1078,7 @@ _gen_encode_type(struct sproto_type* st){
       //|=>(maxpc-6):
       //| inc index
       dasm_put(Dst, 2715, (label_return_error), (maxpc-2), (maxpc-7), (maxpc-7), SIZEOF_HEADER, _tag, (maxpc-6), (maxpc-8), (label_return_error), (maxpc-8), Dt3([0]), Dt3([1]), SIZEOF_FIELD, (maxpc-6));
-#line 826 "jitx64.desc"
+#line 819 "jitx64.desc"
       //| mov eax, value
       //| mov RECORD[0], al
       //| shr eax, 8  
@@ -1095,7 +1087,7 @@ _gen_encode_type(struct sproto_type* st){
     //| 
     //|=>(maxpc-2): // for next
     dasm_put(Dst, 2829, Dt3([0]), Dt3([1]), _tag, (maxpc-2));
-#line 833 "jitx64.desc"
+#line 826 "jitx64.desc"
   }
   //| mov rax, index
   //| mov HEADER[0], al
@@ -1107,7 +1099,7 @@ _gen_encode_type(struct sproto_type* st){
   //| sub datasz, header_sz
   //| mov DATA, HEADER
   dasm_put(Dst, 2853, Dt1([0]), Dt1([1]), header_sz);
-#line 843 "jitx64.desc"
+#line 836 "jitx64.desc"
 
   //| add DATA, header_sz
   //|
@@ -1133,7 +1125,7 @@ _gen_encode_type(struct sproto_type* st){
   //|=>(label_return_error):
   //| _return, -1
   dasm_put(Dst, 2884, header_sz, st->maxn, (maxpc-9), SIZEOF_HEADER, (unsigned int)((uintptr_t)memmove), (unsigned int)(((uintptr_t)memmove)>>32), (maxpc-9), SIZEOF_HEADER, (label_return_error));
-#line 867 "jitx64.desc"
+#line 860 "jitx64.desc"
 
   return 1;
 }
@@ -1145,12 +1137,11 @@ _gen_decode(struct sproto_type* st){
   //| _pre
   dasm_put(Dst, 2961);
    int success = _gen_decode_type(st);
-#line 877 "jitx64.desc"
-  //int success = 1;
+#line 870 "jitx64.desc"
   //|
   //| _ret
   dasm_put(Dst, 2979);
-#line 880 "jitx64.desc"
+#line 872 "jitx64.desc"
   
   void* ret = (success)?(_jitcode_new(Dst)):(NULL);  
   _free_env(Dst);
@@ -1164,45 +1155,13 @@ _gen_encode(struct sproto_type* st){
   //| _pre
   dasm_put(Dst, 2961);
    int success =  _gen_encode_type(st);
-#line 892 "jitx64.desc"
+#line 884 "jitx64.desc"
   //|
   //| _ret
   dasm_put(Dst, 2979);
-#line 894 "jitx64.desc"
+#line 886 "jitx64.desc"
 
   void* ret = (success)?(_jitcode_new(Dst)):(NULL);
   _free_env(Dst);
   return ret;
 }
-
-
-// for test
-/*
-void* _gen_jit(const char* str, uint8_t* tmp_data){
-  // prepare state
-  _new_env(Dst, actions);
-
-  uint8_t _data[] = {0x01, 0x00};
-
-  //|.type v_tmp, uint8_t, r8
-#define DtA(_V) (int)(ptrdiff_t)&(((uint8_t *)0)_V)
-#line 910 "jitx64.desc"
-  //|.type v_src, uint8_t, rcx
-#define DtB(_V) (int)(ptrdiff_t)&(((uint8_t *)0)_V)
-#line 911 "jitx64.desc"
-
-  //| mov64 v_src, (uintptr_t)_data
-  //| mov v_tmp, v_src
-  //| mov ah, v_tmp[0]
-  //| mov ah, v_src[0]
-  dasm_put(Dst, 2999, (unsigned int)((uintptr_t)_data), (unsigned int)(((uintptr_t)_data)>>32), DtA([0]), DtB([0]));
-#line 916 "jitx64.desc"
-
-
-  void* ret = _jitcode_new(Dst);
-  _free_env(Dst);
-  return ret;
-}
-*/
-
-

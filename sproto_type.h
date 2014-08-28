@@ -26,11 +26,8 @@ struct sproto_type {
   int maxn;
   struct field *f;
 
-  #ifdef SPROTO_JIT
-    // for jit func
-    decode_code decode_func;
-    encode_code encode_func;
-  #endif
+  decode_code decode_func;
+  encode_code encode_func;
 };
 
 
