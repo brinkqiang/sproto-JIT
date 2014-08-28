@@ -113,8 +113,8 @@ static void* labels[SPROTO_CODE__MAX];
 |.macro _fill_size, data, sz, R_out
 | mov eax, sz
 | cmp eax, 0
-| jl <4
-| je <5
+| jl >4
+| je >5
 | mov eax, sz
 | mov data[0], al
 | shr eax, 8
@@ -184,12 +184,12 @@ static void* labels[SPROTO_CODE__MAX];
 |.endmacro
 
 
-|.macro _encode_string, cb, ud, f, data, size, R_out
+|.macro _encode_buffer, cb, ud, sproto_type, name, st, data, size, R_out
 | cmp size, SIZEOF_LENGTH
 | jl >1
 | add data, SIZEOF_LENGTH
 | sub size, SIZEOF_LENGTH
-| _call_cb cb, ud, f->name, SPROTO_TSTRING, 0, NULL,  data, _set_rg_value, size, R_out
+| _call_cb cb, ud, name, sproto_type, 0, st,  data, _set_rg_value, size, R_out
 | sub data, SIZEOF_LENGTH
 | add size, SIZEOF_LENGTH
 | _fill_size data, R_out, R_out
@@ -586,6 +586,93 @@ _gen_decode_type(struct sproto_type* st){
 }
 
 
+|.type   ea_buffer, uint8_t, r15
+|.define ea_index, rbp
+|.define ea_size, tmp64
+|.define sz_64,  r11
+|.define sz,    r11d
+
+static int 
+_gen_encode_array(struct field* f, unsigned int label_return_error){
+  | cmp ENCODE_SIZE, SIZEOF_LENGTH
+  | jl =>(label_return_error)
+  | mov ea_size, ENCODE_SIZE
+  | sub ea_size, SIZEOF_LENGTH
+  | mov ea_buffer, DATA
+  | add ea_buffer, SIZEOF_LENGTH
+
+  void* tmp_u = &(jit_instance.tmp_u);
+  int size_u = sizeof(jit_instance.tmp_u);
+
+  int type = f->type & ~SPROTO_TARRAY;
+  switch(type){
+    case SPROTO_TINTEGER:
+        printf("TODO IT!!!");
+        assert(0);
+      break;
+
+    case SPROTO_TBOOLEAN:{
+        | mov ea_index, 1
+        |1:
+        | _call_cb ENCODE_CB, ENCODE_UD, f->name, type, ea_index, f->st, tmp_u, _set_imm_value, sizeof(uint32_t), eax
+        | cmp eax, 0
+        | jl =>(label_return_error)
+        | je >2
+        | cmp ea_size, 1
+        | jl =>(label_return_error)
+        | mov al, 1
+        | mov ea_buffer[0], al
+        | _gt_u32 rax
+        | cmp rax, 0
+        | jne >3
+        | mov al, 0
+        | mov ea_buffer[0], al 
+        |3:
+        | dec ea_size
+        | inc ea_buffer
+        | inc ea_index
+        | jmp <1 
+        |
+        |2:
+      }break;
+
+    default:{
+        | mov ea_index, 1
+        |1:
+        | cmp ea_size, SIZEOF_LENGTH
+        | jl =>(label_return_error)
+        | sub ea_size, SIZEOF_LENGTH
+        | add ea_buffer, SIZEOF_LENGTH
+        | _call_cb ENCODE_CB, ENCODE_UD, f->name, type, ea_index, f->st, ea_buffer, _set_rg_value, ea_size, r10d
+        | cmp r10d, 0
+        | jl =>(label_return_error)
+        | je >2
+        | sub ea_buffer, SIZEOF_LENGTH
+        | _fill_size ea_buffer, r10d, eax
+        | add ea_buffer, SIZEOF_LENGTH
+        | add ea_buffer, r10
+        | sub ea_size, r10
+        | inc ea_index
+        | jmp <1
+        |
+        |2:
+        | sub ea_buffer, SIZEOF_LENGTH
+      }break;
+  }
+
+  | sub ea_buffer, DATA
+  | sub ea_buffer, SIZEOF_LENGTH
+  | cmp ea_buffer, 0
+  | je >1
+  | _fill_size DATA, r15d, sz
+  | jmp >2
+  |1:
+  | mov sz, 0
+  |2:
+
+  return 1;
+}
+
 static int 
 _gen_encode_type(struct sproto_type* st){
   assert(SIZEOF_FIELD == 2);
@@ -607,7 +694,7 @@ _gen_encode_type(struct sproto_type* st){
   
   int i;
 
-  |.define index,   r10
+  |.define index,   rbx
   |.define lasttag, r13
   | xor index, index
   | mov lasttag, -1
@@ -620,8 +707,6 @@ _gen_encode_type(struct sproto_type* st){
 
     |.define datasz, r15 
     |.define tag,    r11
-    |.define sz_64,  r11
-    |.define sz,    r11d
     |.define value, r12d
     |.define value64, r12
 
@@ -631,8 +716,8 @@ _gen_encode_type(struct sproto_type* st){
     | xor value, value
 
     if(type & SPROTO_TARRAY){
-      printf("array TODO IT!!\n");
-       // assert(0);
+      int ret = _gen_encode_array(f, label_return_error);
+      if(!ret) return ret;
     } else {
       switch(type){
         case SPROTO_TINTEGER:
@@ -666,12 +751,11 @@ _gen_encode_type(struct sproto_type* st){
         }break;
 
         case SPROTO_TSTRING:{
-          | _encode_string ENCODE_CB, ENCODE_UD, f, DATA, ENCODE_SIZE, sz
+          | _encode_buffer ENCODE_CB, ENCODE_UD, SPROTO_TSTRING, f->name, NULL, DATA, ENCODE_SIZE, sz
         }break;
 
         case SPROTO_TSTRUCT: {
-          printf("struct TODO IT!!\n");
-          assert(0);
+          | _encode_buffer ENCODE_CB, ENCODE_UD, SPROTO_TSTRUCT, f->name, f->st, DATA, ENCODE_SIZE, sz
         }break;
 
         default:
@@ -723,7 +807,6 @@ _gen_encode_type(struct sproto_type* st){
     | 
     |=>(maxpc-2): // for next
   }
-  //| int3
   | mov rax, index
   | mov HEADER[0], al
   | shr rax, 8
@@ -802,7 +885,6 @@ void* _gen_jit(const char* str, uint8_t* tmp_data){
   |.type v_tmp, uint8_t, r8
   |.type v_src, uint8_t, rcx
 
-  | int3
   | mov64 v_src, (uintptr_t)_data
   | mov v_tmp, v_src
   | mov ah, v_tmp[0]
