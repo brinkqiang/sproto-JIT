@@ -12,7 +12,7 @@ endif
 all : sproto.so
 
 sproto.so : sproto.c lsproto.c sproto_jit.c
-	CC -g  -o2 -Wall --shared $(CFLAG) -o $@ $^
+	$(CC) -g  -o2 -Wall --shared $(CFLAG) -o $@ $^
 
 
 clean :
