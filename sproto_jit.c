@@ -22,17 +22,18 @@ static void  _jitcode_free(void* code);
 
 uint8_t * encode_integer_array(sproto_callback cb, void *ud, struct field *f, uint8_t *buffer, int size);
 
+union tmp_u{
+  uint64_t u64;
+  uint32_t u32;
+
+  struct {
+    uint32_t low;
+    uint32_t hi;
+  } v64_op;
+};
+
 struct sproto_jit {
   dasm_State* ds;
-  union {
-    uint64_t u64;
-    uint32_t u32;
-
-    struct {
-      uint32_t low;
-      uint32_t hi;
-    } v64_op;
-  } tmp_u;
 
   unsigned int maxpc;
 } jit_instance;
@@ -46,8 +47,6 @@ static void _new_env(dasm_State **state, const void *actionlist){
   dasm_init(state, 1);
   dasm_setupglobal(Dst, labels, SPROTO_CODE__MAX);
   dasm_setup(state, actionlist);
-
-  jit_instance.tmp_u.u64 = 0;
   maxpc = 0;
 }
 

@@ -27,7 +27,6 @@ static void* labels[SPROTO_CODE__MAX];
 
 
 |.macro _pre
-| sub rsp, 8
 | push rbp
 | push rbx
 | push rdi
@@ -36,10 +35,12 @@ static void* labels[SPROTO_CODE__MAX];
 | push r13
 | push r14
 | push r15
+| sub rsp, sizeof(union tmp_u)
 |.endmacro
 
 |.macro _ret
 |->run_done:
+| add rsp, sizeof(union tmp_u)
 | pop r15
 | pop r14
 | pop r13
@@ -48,7 +49,6 @@ static void* labels[SPROTO_CODE__MAX];
 | pop rdi
 | pop rbx
 | pop rbp
-| add rsp, 8
 | ret
 |.endmacro
 
@@ -58,44 +58,30 @@ static void* labels[SPROTO_CODE__MAX];
 |.endmacro
 
 
-|.macro _set_imm_value, value
-| mov64 r9, (uintptr_t)value
-|.endmacro
-
-|.macro _set_rg_value, value
-| mov r9, value
-|.endmacro
-
 // argement rdi, rsi, rdx, rcx, r8, r9, rax
-// R_OUT_RET is return value
-|.macro _call_cb, R_cb, ud, tagname, type, index, st, value, _set_value, length, R_OUT_RET
-| sub rsp, 8
+|.macro _call_cb, R_cb, ud, tagname, type, index, st, value, length
+| mov r9, value
 | push rdi
 | push rsi
 | push rdx
 | push rcx
 | push r8 
-| push r9
 |
 | push length
 | mov rax, R_cb
 | mov rdi, ud
 | mov64 rsi, (uintptr_t)tagname
 | mov64 r8, (uintptr_t)st
-| _set_value value
 | mov rdx, type
 | mov rcx, index
 | call rax
-| mov R_OUT_RET, eax
 |
 | add rsp, 8 // pop length
-| pop r9
 | pop r8
 | pop rcx
 | pop rdx
 | pop rsi
 | pop rdi
-| add rsp, 8  // for 16 aligned
 |.endmacro
 
 |.type HEADER, uint8_t,   ENCODE_DATA
@@ -182,7 +168,8 @@ static void* labels[SPROTO_CODE__MAX];
 | jl >1
 | add data, SIZEOF_LENGTH
 | sub size, SIZEOF_LENGTH
-| _call_cb cb, ud, name, sproto_type, 0, st,  data, _set_rg_value, size, R_out
+| _call_cb cb, ud, name, sproto_type, 0, st,  data, size
+| mov R_out, eax
 | sub data, SIZEOF_LENGTH
 | add size, SIZEOF_LENGTH
 | _fill_size data, R_out, R_out
@@ -235,35 +222,31 @@ static void* labels[SPROTO_CODE__MAX];
 |.endmacro
 
 
+|.type TMP_U_P, union tmp_u, rsp
 |.type JIT_P, struct sproto_jit, r9
+
 |.macro _gt_u32, R_out
-| mov64 JIT_P, (uintptr_t)&(jit_instance) 
-| mov R_out, JIT_P->tmp_u.u32
+| mov R_out, TMP_U_P->u32
 |.endmacro
 
 |.macro _gt_u64, R_out
-| mov64 JIT_P, (uintptr_t)&(jit_instance)
-| mov   R_out, JIT_P->tmp_u.u64
+| mov   R_out, TMP_U_P->u64
 |.endmacro
 
 |.macro _st_u64, v
-| mov64 JIT_P, (uintptr_t)&(jit_instance)
-| mov JIT_P->tmp_u.u64, v
+| mov TMP_U_P->u64, v
 |.endmacro
 
 |.macro _st_u32, v
-| mov64 JIT_P, (uintptr_t)&(jit_instance)
-| mov JIT_P->tmp_u.u32, v
+| mov TMP_U_P->u32, v
 |.endmacro
 
 |.macro _st_low, v32
-| mov64 JIT_P, (uintptr_t)&(jit_instance)
-| mov JIT_P->tmp_u.v64_op.low, v32
+| mov TMP_U_P->v64_op.low, v32
 |.endmacro
 
 |.macro _st_hi, v32
-| mov64 JIT_P, (uintptr_t)&(jit_instance)
-| mov JIT_P->tmp_u.v64_op.hi, v32
+| mov TMP_U_P->v64_op.hi, v32
 |.endmacro
 
 
@@ -292,8 +275,8 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
   | _todword tmp64
   | add currentdata, SIZEOF_LENGTH
   
-  void* tmp_u = &(jit_instance.tmp_u);
-  int size_u = sizeof(jit_instance.tmp_u);
+  int size_u = sizeof(union tmp_u);
+  assert(size_u == 8);
 
   assert(sizeof(uint32_t) == 4);
   assert(sizeof(uint64_t) == 8);
@@ -329,7 +312,7 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
         | mov tmp64, currentdata    // back currentdata
         |
         | inc rbx
-        | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, rbx, NULL, tmp_u, _set_imm_value, size_u, eax
+        | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, rbx, NULL, TMP_U_P, size_u
         | mov currentdata, tmp64
         | cmp rbp, rbx
         | jg <2
@@ -356,7 +339,7 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
         | mov tmp64, currentdata    // back currentdata
         |
         | inc rbx
-        | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, rbx, NULL, tmp_u, _set_imm_value, size_u, eax
+        | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, rbx, NULL, TMP_U_P, size_u
         | mov currentdata, tmp64
         | cmp rbp, rbx
         | jg <3
@@ -376,7 +359,7 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
       | _st_u32 rax
       |
       | inc rbx
-      | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TBOOLEAN, rbx, NULL, tmp_u, _set_imm_value, size_u, eax
+      | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TBOOLEAN, rbx, NULL, TMP_U_P, size_u
       | inc tmp64
       | cmp rbp, rbx
       | jg <4
@@ -401,13 +384,12 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
       | cmp rax, rbp
       | jg =>(label_return_error)
       |
-      | mov r9, rax
+      | sub rbp, rax
       | mov currentdata, tmp64
-      | _call_cb DECODE_CB, DECODE_UD, f->name, type, rbx, f->st, currentdata, _set_rg_value, r9, eax
+      | add tmp64, rax
+      | _call_cb DECODE_CB, DECODE_UD, f->name, type, rbx, f->st, currentdata, rax
       | cmp eax, 0
       | jne =>(label_return_error)
-      | sub rbp, r9
-      | add tmp64, r9
       | inc rbx
       | jmp <5
 
@@ -428,8 +410,8 @@ _gen_decode_type(struct sproto_type* st){
   unsigned int label_return_error = maxpc-1;
   unsigned int label_end = maxpc-2;
 
-  void* tmp_u = &(jit_instance.tmp_u);
-  int size_u = sizeof(jit_instance.tmp_u);
+  int size_u = sizeof(union tmp_u);
+  assert(size_u == 8);
 
   assert(SIZEOF_FIELD==2); // for optimize
 
@@ -533,7 +515,7 @@ _gen_decode_type(struct sproto_type* st){
           | cmp d_value, 0
           | jl =>(maxpc-3)
           | _st_u64 d_value64
-          | _call_cb DECODE_CB,  DECODE_UD, f->name, f->type, 0, NULL, tmp_u, _set_imm_value, size_u, eax
+          | _call_cb DECODE_CB,  DECODE_UD, f->name, f->type, 0, NULL, TMP_U_P, size_u
           | jmp =>(maxpc-4) 
           |
           |=>(maxpc-3):
@@ -549,7 +531,7 @@ _gen_decode_type(struct sproto_type* st){
           | _expand64
           | mov tmp64, rax
           | _st_u64, tmp64
-          | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, 0, NULL, tmp_u, _set_imm_value, size_u, eax
+          | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, 0, NULL, TMP_U_P, size_u
           | jmp =>(maxpc-4)
           |1:
           | cmp eax, sizeof(uint64_t)
@@ -563,7 +545,7 @@ _gen_decode_type(struct sproto_type* st){
           | add tmp64, sizeof(uint32_t)
           | _toword tmp64
           | _st_hi rax
-          | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, 0, NULL, tmp_u, _set_imm_value, size_u, eax
+          | _call_cb DECODE_CB, DECODE_UD, f->name, SPROTO_TINTEGER, 0, NULL, TMP_U_P, size_u
           |
           |=>(maxpc-4):
           |
@@ -575,7 +557,7 @@ _gen_decode_type(struct sproto_type* st){
           | _todword, tmp64
           | add currentdata, SIZEOF_LENGTH
           | mov r10, rax
-          | _call_cb DECODE_CB, DECODE_UD, f->name, f->type, 0, f->st, currentdata, _set_rg_value, r10, eax
+          | _call_cb DECODE_CB, DECODE_UD, f->name, f->type, 0, f->st, currentdata, r10
           | cmp rax, 0
           | jne =>(label_return_error)
           |
@@ -617,8 +599,6 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
   | mov ea_buffer, DATA
   | add ea_buffer, SIZEOF_LENGTH
 
-  void* tmp_u = &(jit_instance.tmp_u);
-
   int type = f->type & ~SPROTO_TARRAY;
   switch(type){
     case SPROTO_TINTEGER:
@@ -631,7 +611,7 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
     case SPROTO_TBOOLEAN:{
         | mov ea_index, 1
         |1:
-        | _call_cb ENCODE_CB, ENCODE_UD, f->name, type, ea_index, f->st, tmp_u, _set_imm_value, sizeof(uint32_t), eax
+        | _call_cb ENCODE_CB, ENCODE_UD, f->name, type, ea_index, f->st, TMP_U_P, sizeof(uint32_t)
         | cmp eax, 0
         | jl =>(label_return_error)
         | je >2
@@ -660,7 +640,8 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
         | jl =>(label_return_error)
         | sub ea_size, SIZEOF_LENGTH
         | add ea_buffer, SIZEOF_LENGTH
-        | _call_cb ENCODE_CB, ENCODE_UD, f->name, type, ea_index, f->st, ea_buffer, _set_rg_value, ea_size, r10d
+        | _call_cb ENCODE_CB, ENCODE_UD, f->name, type, ea_index, f->st, ea_buffer, ea_size
+        | mov r10d, eax
         | cmp r10d, 0
         | jl =>(label_return_error)
         | je >2
@@ -705,10 +686,10 @@ _gen_encode_type(struct sproto_type* st){
   | add DATA, header_sz
   | sub ENCODE_SIZE, header_sz
 
-  void* tmp_u = &(jit_instance.tmp_u);
-  int size_u = sizeof(jit_instance.tmp_u);
+  int size_u = sizeof(union tmp_u);
+  assert(size_u == 8);
 
-  
+
   int i;
 
   |.define index,   rbx
@@ -739,7 +720,8 @@ _gen_encode_type(struct sproto_type* st){
       switch(type){
         case SPROTO_TINTEGER:
         case SPROTO_TBOOLEAN:{
-          | _call_cb ENCODE_CB, ENCODE_UD, f->name, type, 0, NULL, tmp_u, _set_imm_value, size_u, sz
+          | _call_cb ENCODE_CB, ENCODE_UD, f->name, type, 0, NULL, TMP_U_P, size_u
+          | mov sz, eax
           | cmp sz, 0
           | jl =>(label_return_error)
           | je =>(maxpc-2)
