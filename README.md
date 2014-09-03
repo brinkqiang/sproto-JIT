@@ -2,7 +2,7 @@ sproto-JIT
 ======
 added JIT support for sproto. using [dynasm](http://corsix.github.io/dynasm-doc/index.html).
 
-I think this is not a good idea. Because [sproto](https://github.com/cloudwu/sproto) mainly to lua binding. so the preformance mainly in the callback function. Although using JIT encode/decode can reduce instruction dispatch, improve cache utilization. using jit is best only have 12% improvement. :(
+I think this is not a good idea. Because [sproto](https://github.com/cloudwu/sproto) mainly to lua binding. so the preformance mainly in the callback function. Although using JIT encode/decode can reduce instruction dispatch, improve cache utilization. using jit is best only have 14% improvement. :(
 
 you can set macro `SPROTO_JIT` to decide use the jit or interpreter mode at [sproto.h](https://github.com/lvzixun/sproto/blob/master/sproto.h).
 
@@ -56,8 +56,8 @@ local ab = {
 | library | encode 1M times | decode 1M times |
 |:--------:|:--------------:|:---------------:|
 | sproto(no jit / nopack) | 1.83s | 5.96s |
-| sproto(jit / nopack) | 1.54s | 5.31s |
+| sproto(jit / nopack) | 1.54s | 5.11s |
 
-the overall increase of 12.8%
+the overall increase of 14.7%
 
 
