@@ -14,7 +14,7 @@
 #endif
 #line 4 "jitx64.desc"
 //|.actionlist actions
-static const unsigned char actions[2788] = {
+static const unsigned char actions[2756] = {
   76,137,223,72,49,192,138,135,233,138,167,233,193,224,16,138,135,233,138,167,
   233,73,129,195,239,255,72,131,252,248,1,15,140,245,65,138,187,233,73,252,
   255,195,72,252,255,200,64,128,252,255,235,15,133,244,247,72,137,197,72,131,
@@ -43,77 +43,76 @@ static const unsigned char actions[2788] = {
   72,129,252,237,239,72,57,232,15,143,245,72,41,197,73,137,252,251,72,1,199,
   77,137,217,87,86,82,81,65,80,80,72,137,200,76,137,199,72,190,237,237,73,184,
   237,237,72,199,194,237,72,137,217,252,255,208,72,131,196,8,65,88,89,90,94,
-  95,131,252,248,0,15,133,245,255,72,252,255,195,252,233,244,5,255,249,255,
-  72,129,252,250,239,15,140,245,72,49,192,138,134,233,138,166,233,72,129,198,
-  239,129,252,234,239,209,224,57,194,15,140,245,73,137,252,247,73,1,199,41,
-  194,209,232,65,137,196,77,49,210,69,49,252,237,77,49,210,65,190,252,255,252,
-  255,252,255,252,255,255,248,1,69,57,229,15,141,245,65,252,255,198,72,49,252,
-  255,68,137,252,239,209,231,72,1,252,247,72,49,192,138,135,233,138,167,233,
-  65,137,194,131,224,1,15,138,244,248,68,137,208,209,232,65,1,198,65,252,255,
-  197,252,233,244,1,248,2,65,252,255,197,65,209,252,234,65,252,255,202,255,
-  65,129,252,254,239,15,133,245,77,137,252,251,65,131,252,250,0,15,141,245,
-  129,252,250,239,15,140,245,76,137,252,255,72,49,192,138,135,233,138,167,233,
-  193,224,16,138,135,233,138,167,233,129,192,239,57,194,15,140,245,73,1,199,
-  41,194,249,255,65,131,252,250,0,15,140,245,76,137,148,253,36,233,73,137,225,
-  87,86,82,81,65,80,104,237,72,137,200,76,137,199,72,190,237,237,73,184,237,
-  237,72,199,194,237,72,199,193,0,0,0,0,252,255,208,72,131,196,8,65,88,89,90,
-  94,95,252,233,245,249,76,137,223,72,49,192,138,135,233,138,167,233,193,224,
-  16,138,135,233,138,167,233,129,252,248,239,15,133,244,247,72,129,199,239,
-  255,72,49,192,138,135,233,138,167,233,193,224,16,138,135,233,138,167,233,
-  137,199,72,49,192,137,252,248,131,252,255,0,15,141,244,251,72,49,192,72,252,
-  247,208,72,193,224,32,72,9,252,248,248,5,72,137,199,72,137,188,253,36,233,
-  73,137,225,87,86,82,81,65,80,104,237,72,137,200,76,137,199,72,190,237,237,
-  73,184,237,237,72,199,194,237,72,199,193,0,0,0,0,252,255,208,72,131,196,8,
-  65,88,89,90,94,95,252,233,245,248,1,129,252,248,239,15,133,245,255,76,137,
-  223,72,129,199,239,72,49,192,138,135,233,138,167,233,193,224,16,138,135,233,
-  138,167,233,72,137,132,253,36,233,72,129,199,239,72,49,192,138,135,233,138,
-  167,233,72,137,132,253,36,233,73,137,225,87,86,82,81,65,80,104,237,72,137,
-  200,76,137,199,72,190,237,237,73,184,237,237,72,199,194,237,72,199,193,0,
-  0,0,0,252,255,208,72,131,196,8,65,88,89,90,94,95,249,255,76,137,223,72,49,
-  192,138,135,233,138,167,233,193,224,16,138,135,233,138,167,233,73,129,195,
-  239,73,137,194,77,137,217,87,86,82,81,65,80,65,82,72,137,200,76,137,199,72,
-  190,237,237,73,184,237,237,72,199,194,237,72,199,193,0,0,0,0,252,255,208,
-  72,131,196,8,65,88,89,90,94,95,72,131,252,248,0,15,133,245,255,248,1,69,57,
-  229,15,141,245,65,252,255,198,72,49,252,255,68,137,252,239,209,231,72,1,252,
-  247,72,49,192,138,135,233,138,167,233,65,137,194,131,224,1,15,138,244,248,
-  68,137,208,209,232,65,1,198,65,252,255,197,252,233,244,1,248,2,65,252,255,
-  197,65,209,252,234,65,252,255,202,249,255,249,72,199,192,252,255,252,255,
-  252,255,252,255,252,233,244,10,249,72,199,192,0,0,0,0,252,233,244,10,255,
-  72,129,252,250,239,15,140,245,72,137,215,72,129,252,239,239,77,137,252,247,
-  73,129,199,239,255,87,86,82,81,65,80,72,137,207,76,137,198,72,186,237,237,
-  76,137,252,249,73,137,252,248,72,184,237,237,252,255,208,65,88,89,90,94,95,
-  73,137,199,73,131,252,255,0,15,132,245,255,72,199,197,1,0,0,0,248,1,73,137,
-  225,87,86,82,81,65,80,104,237,72,137,200,76,137,199,72,190,237,237,73,184,
-  237,237,72,199,194,237,72,137,252,233,252,255,208,72,131,196,8,65,88,89,90,
-  94,95,131,252,248,0,15,140,245,15,132,244,248,72,131,252,255,1,15,140,245,
-  176,1,65,136,135,233,72,139,132,253,36,233,72,131,252,248,0,15,133,244,249,
-  176,0,65,136,135,233,248,3,72,252,255,207,73,252,255,199,72,252,255,197,252,
-  233,244,1,248,2,255,72,199,197,1,0,0,0,248,1,72,129,252,255,239,15,140,245,
-  72,129,252,239,239,73,129,199,239,77,137,252,249,87,86,82,81,65,80,87,72,
-  137,200,76,137,199,72,190,237,237,73,184,237,237,72,199,194,237,72,137,252,
-  233,252,255,208,72,131,196,8,65,88,89,90,94,95,65,137,194,65,131,252,250,
-  0,15,140,245,15,132,244,248,73,129,252,239,239,68,137,208,131,252,248,0,15,
-  140,244,250,15,132,244,251,255,68,137,208,65,136,135,233,193,232,8,65,136,
-  135,233,193,232,8,65,136,135,233,193,232,8,65,136,135,233,68,137,208,129,
-  192,239,252,233,244,249,248,5,184,0,0,0,0,252,233,244,249,248,4,184,252,255,
-  252,255,252,255,252,255,248,3,73,129,199,239,77,1,215,76,41,215,72,252,255,
-  197,252,233,244,1,248,2,73,129,252,239,239,255,77,41,252,247,73,129,252,239,
-  239,73,131,252,255,0,15,132,244,247,68,137,252,248,131,252,248,0,15,140,244,
-  250,15,132,244,251,68,137,252,248,65,136,134,233,193,232,8,65,136,134,233,
-  193,232,8,65,136,134,233,193,232,8,65,136,134,233,69,137,252,251,65,129,195,
-  239,252,233,244,249,248,5,65,187,0,0,0,0,252,233,244,249,248,4,65,187,252,
-  255,252,255,252,255,252,255,248,3,252,233,244,248,248,1,255,65,187,0,0,0,
-  0,248,2,255,72,129,252,250,239,15,140,245,73,137,252,246,73,129,198,239,72,
-  129,252,234,239,255,72,49,219,73,199,197,252,255,252,255,252,255,252,255,
-  255,77,49,219,77,49,228,65,187,252,255,252,255,252,255,252,255,69,49,228,
-  255,73,137,225,87,86,82,81,65,80,104,237,72,137,200,76,137,199,72,190,237,
-  237,73,184,237,237,72,199,194,237,72,199,193,0,0,0,0,252,255,208,72,131,196,
-  8,65,88,89,90,94,95,65,137,195,65,131,252,251,0,15,140,245,15,132,245,65,
-  129,252,251,239,15,133,245,68,139,164,253,36,233,65,131,252,252,0,15,140,
-  245,65,252,255,196,65,209,228,65,187,2,0,0,0,252,233,245,249,72,129,252,250,
-  239,255,15,140,244,247,68,137,224,65,136,134,233,193,232,8,65,136,134,233,
-  193,232,8,65,136,134,233,193,232,8,65,136,134,233,184,237,131,252,248,0,15,
-  140,244,250,15,132,244,251,184,237,65,136,134,233,193,232,8,65,136,134,233,
+  95,133,192,15,133,245,255,72,252,255,195,252,233,244,5,255,249,255,72,129,
+  252,250,239,15,140,245,72,49,192,138,134,233,138,166,233,72,129,198,239,129,
+  252,234,239,209,224,57,194,15,140,245,73,137,252,247,73,1,199,41,194,209,
+  232,65,137,196,77,49,210,69,49,252,237,77,49,210,65,190,252,255,252,255,252,
+  255,252,255,255,248,1,69,57,229,15,141,245,65,252,255,198,72,49,252,255,68,
+  137,252,239,209,231,72,1,252,247,72,49,192,138,135,233,138,167,233,65,137,
+  194,131,224,1,15,138,244,248,68,137,208,209,232,65,1,198,65,252,255,197,252,
+  233,244,1,248,2,65,252,255,197,65,209,252,234,65,252,255,202,255,65,129,252,
+  254,239,15,133,245,77,137,252,251,65,131,252,250,0,15,141,245,129,252,250,
+  239,15,140,245,76,137,252,255,72,49,192,138,135,233,138,167,233,193,224,16,
+  138,135,233,138,167,233,129,192,239,57,194,15,140,245,73,1,199,41,194,249,
+  255,69,133,210,15,136,245,76,137,148,253,36,233,73,137,225,87,86,82,81,65,
+  80,104,237,72,137,200,76,137,199,72,190,237,237,73,184,237,237,72,199,194,
+  237,72,199,193,0,0,0,0,252,255,208,72,131,196,8,65,88,89,90,94,95,252,233,
+  245,249,76,137,223,72,49,192,138,135,233,138,167,233,193,224,16,138,135,233,
+  138,167,233,129,252,248,239,15,133,244,247,72,129,199,239,255,72,49,192,138,
+  135,233,138,167,233,193,224,16,138,135,233,138,167,233,137,199,72,49,192,
+  137,252,248,131,252,255,0,15,141,244,251,72,49,192,72,252,247,208,72,193,
+  224,32,72,9,252,248,248,5,72,137,199,72,137,188,253,36,233,73,137,225,87,
+  86,82,81,65,80,104,237,72,137,200,76,137,199,72,190,237,237,73,184,237,237,
+  72,199,194,237,72,199,193,0,0,0,0,252,255,208,72,131,196,8,65,88,89,90,94,
+  95,252,233,245,248,1,129,252,248,239,15,133,245,255,76,137,223,72,129,199,
+  239,72,49,192,138,135,233,138,167,233,193,224,16,138,135,233,138,167,233,
+  72,137,132,253,36,233,72,129,199,239,72,49,192,138,135,233,138,167,233,72,
+  137,132,253,36,233,73,137,225,87,86,82,81,65,80,104,237,72,137,200,76,137,
+  199,72,190,237,237,73,184,237,237,72,199,194,237,72,199,193,0,0,0,0,252,255,
+  208,72,131,196,8,65,88,89,90,94,95,249,255,76,137,223,72,49,192,138,135,233,
+  138,167,233,193,224,16,138,135,233,138,167,233,73,129,195,239,73,137,194,
+  77,137,217,87,86,82,81,65,80,65,82,72,137,200,76,137,199,72,190,237,237,73,
+  184,237,237,72,199,194,237,72,199,193,0,0,0,0,252,255,208,72,131,196,8,65,
+  88,89,90,94,95,72,133,192,15,133,245,255,248,1,69,57,229,15,141,245,65,252,
+  255,198,72,49,252,255,68,137,252,239,209,231,72,1,252,247,72,49,192,138,135,
+  233,138,167,233,65,137,194,131,224,1,15,138,244,248,68,137,208,209,232,65,
+  1,198,65,252,255,197,252,233,244,1,248,2,65,252,255,197,65,209,252,234,65,
+  252,255,202,249,255,249,72,199,192,252,255,252,255,252,255,252,255,252,233,
+  244,10,249,72,199,192,0,0,0,0,252,233,244,10,255,72,129,252,250,239,15,140,
+  245,72,137,215,72,129,252,239,239,77,137,252,247,73,129,199,239,255,87,86,
+  82,81,65,80,72,137,207,76,137,198,72,186,237,237,76,137,252,249,73,137,252,
+  248,72,184,237,237,252,255,208,65,88,89,90,94,95,73,137,199,77,133,252,255,
+  15,132,245,255,72,199,197,1,0,0,0,248,1,73,137,225,87,86,82,81,65,80,104,
+  237,72,137,200,76,137,199,72,190,237,237,73,184,237,237,72,199,194,237,72,
+  137,252,233,252,255,208,72,131,196,8,65,88,89,90,94,95,133,192,15,136,245,
+  15,132,244,248,72,131,252,255,1,15,140,245,176,1,65,136,135,233,72,139,132,
+  253,36,233,72,133,192,15,133,244,249,176,0,65,136,135,233,248,3,72,252,255,
+  207,73,252,255,199,72,252,255,197,252,233,244,1,248,2,255,72,199,197,1,0,
+  0,0,248,1,72,129,252,255,239,15,140,245,72,129,252,239,239,73,129,199,239,
+  77,137,252,249,87,86,82,81,65,80,87,72,137,200,76,137,199,72,190,237,237,
+  73,184,237,237,72,199,194,237,72,137,252,233,252,255,208,72,131,196,8,65,
+  88,89,90,94,95,65,137,194,69,133,210,15,136,245,15,132,244,248,73,129,252,
+  239,239,68,137,208,133,192,15,136,244,250,15,132,244,251,255,68,137,208,65,
+  136,135,233,193,232,8,65,136,135,233,193,232,8,65,136,135,233,193,232,8,65,
+  136,135,233,68,137,208,129,192,239,252,233,244,249,248,5,184,0,0,0,0,252,
+  233,244,249,248,4,184,252,255,252,255,252,255,252,255,248,3,73,129,199,239,
+  77,1,215,76,41,215,72,252,255,197,252,233,244,1,248,2,73,129,252,239,239,
+  255,77,41,252,247,73,129,252,239,239,77,133,252,255,15,132,244,247,68,137,
+  252,248,133,192,15,136,244,250,15,132,244,251,68,137,252,248,65,136,134,233,
+  193,232,8,65,136,134,233,193,232,8,65,136,134,233,193,232,8,65,136,134,233,
+  69,137,252,251,65,129,195,239,252,233,244,249,248,5,65,187,0,0,0,0,252,233,
+  244,249,248,4,65,187,252,255,252,255,252,255,252,255,248,3,252,233,244,248,
+  248,1,255,65,187,0,0,0,0,248,2,255,72,129,252,250,239,15,140,245,73,137,252,
+  246,73,129,198,239,72,129,252,234,239,255,72,49,219,73,199,197,252,255,252,
+  255,252,255,252,255,255,77,49,219,77,49,228,65,187,252,255,252,255,252,255,
+  252,255,69,49,228,255,73,137,225,87,86,82,81,65,80,104,237,72,137,200,76,
+  137,199,72,190,237,237,73,184,237,237,72,199,194,237,72,199,193,0,0,0,0,252,
+  255,208,72,131,196,8,65,88,89,90,94,95,65,137,195,69,133,219,15,136,245,15,
+  132,245,65,129,252,251,239,15,133,245,68,139,164,253,36,233,69,133,228,15,
+  136,245,65,252,255,196,65,209,228,65,187,2,0,0,0,252,233,245,249,72,129,252,
+  250,239,255,15,140,244,247,68,137,224,65,136,134,233,193,232,8,65,136,134,
+  233,193,232,8,65,136,134,233,193,232,8,65,136,134,233,184,237,133,192,15,
+  136,244,250,15,132,244,251,184,237,65,136,134,233,193,232,8,65,136,134,233,
   193,232,8,65,136,134,233,193,232,8,65,136,134,233,65,187,237,65,129,195,239,
   252,233,244,249,248,5,255,65,187,0,0,0,0,252,233,244,249,248,4,65,187,252,
   255,252,255,252,255,252,255,248,3,252,233,244,248,248,1,65,187,252,255,252,
@@ -122,34 +121,33 @@ static const unsigned char actions[2788] = {
   65,136,134,233,72,193,232,8,65,136,134,233,255,72,193,232,8,65,136,134,233,
   72,193,232,8,65,136,134,233,72,193,232,8,65,136,134,233,72,193,232,8,65,136,
   134,233,72,193,232,8,65,136,134,233,72,193,232,8,65,136,134,233,72,193,232,
-  8,184,237,131,252,248,0,15,140,244,250,15,132,244,251,184,237,65,136,134,
-  233,193,232,8,65,136,134,233,193,232,8,65,136,134,233,193,232,8,65,136,134,
-  233,65,187,237,65,129,195,239,252,233,244,249,248,5,255,65,187,0,0,0,0,252,
-  233,244,249,248,4,65,187,252,255,252,255,252,255,252,255,248,3,252,233,244,
-  248,248,1,65,187,252,255,252,255,252,255,252,255,248,2,77,49,228,255,72,129,
-  252,250,239,15,140,244,247,73,129,198,239,72,129,252,234,239,77,137,252,241,
-  87,86,82,81,65,80,82,72,137,200,76,137,199,72,190,237,237,73,184,237,237,
-  72,199,194,237,72,199,193,0,0,0,0,252,255,208,72,131,196,8,65,88,89,90,94,
-  95,65,137,195,73,129,252,238,239,72,129,194,239,68,137,216,131,252,248,0,
-  15,140,244,250,15,132,244,251,68,137,216,65,136,134,233,193,232,8,65,136,
-  134,233,193,232,8,65,136,134,233,193,232,8,65,136,134,233,255,69,137,219,
-  65,129,195,239,252,233,244,249,248,5,65,187,0,0,0,0,252,233,244,249,248,4,
-  65,187,252,255,252,255,252,255,252,255,248,3,252,233,244,248,248,1,65,187,
-  252,255,252,255,252,255,252,255,248,2,255,65,131,252,251,0,15,140,245,15,
-  132,245,65,131,252,252,0,15,133,245,77,1,222,76,41,218,249,73,137,223,73,
-  209,231,73,129,199,239,73,1,252,247,73,199,195,237,77,41,252,235,73,131,252,
-  235,1,73,131,252,251,0,15,142,245,73,252,255,203,73,209,227,73,252,255,195,
-  73,129,252,251,252,255,252,255,0,0,15,142,245,252,233,245,249,76,137,216,
-  65,136,135,233,72,193,232,8,65,136,135,233,72,252,255,195,73,129,199,239,
-  249,255,72,252,255,195,68,137,224,65,136,135,233,193,232,8,65,136,135,233,
-  73,199,197,237,249,255,72,137,216,136,134,233,72,193,232,8,136,134,233,77,
-  137,252,247,73,41,252,247,73,129,252,239,239,73,137,252,246,255,73,129,198,
-  239,72,137,217,72,209,227,72,129,252,249,239,15,132,245,72,129,198,239,72,
-  1,222,72,137,252,247,76,137,252,246,76,137,252,250,72,184,237,237,252,255,
-  208,249,73,1,223,73,129,199,239,76,137,252,248,252,233,244,10,249,72,199,
-  192,252,255,252,255,252,255,252,255,252,233,244,10,255,85,83,87,86,65,84,
-  65,85,65,86,65,87,72,129,252,236,239,255,248,10,72,129,196,239,65,95,65,94,
-  65,93,65,92,94,95,91,93,195,255
+  8,184,237,133,192,15,136,244,250,15,132,244,251,184,237,65,136,134,233,193,
+  232,8,65,136,134,233,193,232,8,65,136,134,233,193,232,8,65,136,134,233,65,
+  187,237,65,129,195,239,252,233,244,249,248,5,255,65,187,0,0,0,0,252,233,244,
+  249,248,4,65,187,252,255,252,255,252,255,252,255,248,3,252,233,244,248,248,
+  1,65,187,252,255,252,255,252,255,252,255,248,2,77,49,228,255,72,129,252,250,
+  239,15,140,244,247,73,129,198,239,72,129,252,234,239,77,137,252,241,87,86,
+  82,81,65,80,82,72,137,200,76,137,199,72,190,237,237,73,184,237,237,72,199,
+  194,237,72,199,193,0,0,0,0,252,255,208,72,131,196,8,65,88,89,90,94,95,65,
+  137,195,73,129,252,238,239,72,129,194,239,68,137,216,133,192,15,136,244,250,
+  15,132,244,251,68,137,216,65,136,134,233,193,232,8,65,136,134,233,193,232,
+  8,65,136,134,233,193,232,8,65,136,134,233,255,69,137,219,65,129,195,239,252,
+  233,244,249,248,5,65,187,0,0,0,0,252,233,244,249,248,4,65,187,252,255,252,
+  255,252,255,252,255,248,3,252,233,244,248,248,1,65,187,252,255,252,255,252,
+  255,252,255,248,2,255,69,133,219,15,136,245,15,132,245,69,133,228,15,133,
+  245,77,1,222,76,41,218,249,73,137,223,73,209,231,73,129,199,239,73,1,252,
+  247,73,199,195,237,77,41,252,235,73,131,252,235,1,73,131,252,251,0,15,142,
+  245,73,252,255,203,73,209,227,73,252,255,195,73,129,252,251,252,255,252,255,
+  0,0,15,142,245,252,233,245,249,76,137,216,65,136,135,233,72,193,232,8,65,
+  136,135,233,72,252,255,195,73,129,199,239,249,255,72,252,255,195,68,137,224,
+  65,136,135,233,193,232,8,65,136,135,233,73,199,197,237,249,255,72,137,216,
+  136,134,233,72,193,232,8,136,134,233,77,137,252,247,73,41,252,247,73,129,
+  252,239,239,73,137,252,246,255,73,129,198,239,72,137,217,72,209,227,72,129,
+  252,249,239,15,132,245,72,129,198,239,72,1,222,72,137,252,247,76,137,252,
+  246,76,137,252,250,72,184,237,237,252,255,208,249,73,1,223,73,129,199,239,
+  76,137,252,248,252,233,244,10,249,72,199,192,252,255,252,255,252,255,252,
+  255,252,233,244,10,255,85,83,87,86,65,84,65,85,65,86,65,87,72,129,252,236,
+  239,255,248,10,72,129,196,239,65,95,65,94,65,93,65,92,94,95,91,93,195,255
 };
 
 #line 5 "jitx64.desc"
@@ -253,9 +251,9 @@ static void* labels[SPROTO_CODE__MAX];
 
 //|.macro _fill_size, data, sz, R_out
 //| mov eax, sz
-//| cmp eax, 0
-//| jl >4
-//| je >5
+//| test eax, eax
+//| js >4
+//| jz >5
 //| mov eax, sz
 //| mov data[0], al
 //| shr eax, 8
@@ -570,13 +568,13 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
       //| mov currentdata, tmp64
       //| add tmp64, rax
       //| _call_cb DECODE_CB, DECODE_UD, f->name, type, rbx, f->st, currentdata, rax
-      //| cmp eax, 0
-      //| jne =>(label_return_error)
+      //| test eax, eax
+      //| jnz =>(label_return_error)
       //| inc rbx
       dasm_put(Dst, 463, (label_decode_array_end), SIZEOF_LENGTH, (label_return_error), Dt8([2]), Dt8([3]), Dt8([0]), Dt8([1]), SIZEOF_LENGTH, SIZEOF_LENGTH, (label_return_error), (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)f->st), (unsigned int)(((uintptr_t)f->st)>>32), type, (label_return_error));
 #line 394 "jitx64.desc"
       //| jmp <5
-      dasm_put(Dst, 589);
+      dasm_put(Dst, 587);
 #line 395 "jitx64.desc"
 
     }break;
@@ -587,7 +585,7 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
 
   //|=>(label_decode_array_end):
   //|
-  dasm_put(Dst, 598, (label_decode_array_end));
+  dasm_put(Dst, 596, (label_decode_array_end));
 #line 404 "jitx64.desc"
   return 1;
 }
@@ -662,13 +660,13 @@ _gen_decode_type(struct sproto_type* st){
   //| xor d_index, d_index
   //| xor r10, r10
   //| mov d_tag, -1
-  dasm_put(Dst, 600, SIZEOF_HEADER, (label_return_error), Dt6([0]), Dt6([1]), SIZEOF_HEADER, SIZEOF_HEADER, (label_return_error));
+  dasm_put(Dst, 598, SIZEOF_HEADER, (label_return_error), Dt6([0]), Dt6([1]), SIZEOF_HEADER, SIZEOF_HEADER, (label_return_error));
 #line 475 "jitx64.desc"
 
   //|
   //| _next_tag
   //|
-  dasm_put(Dst, 667, (label_end), Dt8([0]), Dt8([1]));
+  dasm_put(Dst, 665, (label_end), Dt8([0]), Dt8([1]));
 #line 479 "jitx64.desc"
 
   int i;
@@ -698,7 +696,7 @@ _gen_decode_type(struct sproto_type* st){
     //|
     //|=>(maxpc-2):
     //|
-    dasm_put(Dst, 743, _tag, (maxpc-1), (maxpc-2), SIZEOF_LENGTH, (label_return_error), Dt8([2]), Dt8([3]), Dt8([0]), Dt8([1]), SIZEOF_LENGTH, (label_return_error), (maxpc-2));
+    dasm_put(Dst, 741, _tag, (maxpc-1), (maxpc-2), SIZEOF_LENGTH, (label_return_error), Dt8([2]), Dt8([3]), Dt8([0]), Dt8([1]), SIZEOF_LENGTH, (label_return_error), (maxpc-2));
 #line 507 "jitx64.desc"
 
     if(type & SPROTO_TARRAY){
@@ -708,8 +706,8 @@ _gen_decode_type(struct sproto_type* st){
       switch(type){
         case SPROTO_TINTEGER:
         case SPROTO_TBOOLEAN: {
-          //| cmp d_value, 0
-          //| jl =>(maxpc-3)
+          //| test d_value, d_value
+          //| js =>(maxpc-3)
           //| _st_u64 d_value64
           //| _call_cb DECODE_CB,  DECODE_UD, f->name, f->type, 0, NULL, TMP_U_P, size_u
           //| jmp =>(maxpc-4) 
@@ -723,7 +721,7 @@ _gen_decode_type(struct sproto_type* st){
           //|
           //| add tmp64, SIZEOF_LENGTH
           //| _todword, tmp64
-          dasm_put(Dst, 807, (maxpc-3), Dt4(->u64), size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), f->type, (maxpc-4), (maxpc-3), Dt8([2]), Dt8([3]), Dt8([0]), Dt8([1]), sizeof(uint32_t), SIZEOF_LENGTH);
+          dasm_put(Dst, 805, (maxpc-3), Dt4(->u64), size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), f->type, (maxpc-4), (maxpc-3), Dt8([2]), Dt8([3]), Dt8([0]), Dt8([1]), sizeof(uint32_t), SIZEOF_LENGTH);
 #line 530 "jitx64.desc"
           //| mov tmp32, eax
           //| _expand64
@@ -737,7 +735,7 @@ _gen_decode_type(struct sproto_type* st){
             //| jne =>(label_return_error)
           //|
           //| mov tmp64, currentdata
-          dasm_put(Dst, 908, Dt8([2]), Dt8([3]), Dt8([0]), Dt8([1]), Dt4(->u64), size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), SPROTO_TINTEGER, (maxpc-4), sizeof(uint64_t), (label_return_error));
+          dasm_put(Dst, 904, Dt8([2]), Dt8([3]), Dt8([0]), Dt8([1]), Dt4(->u64), size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), SPROTO_TINTEGER, (maxpc-4), sizeof(uint64_t), (label_return_error));
 #line 542 "jitx64.desc"
           //| add tmp64, SIZEOF_LENGTH
           //| _todword tmp64
@@ -749,7 +747,7 @@ _gen_decode_type(struct sproto_type* st){
           //|
           //|=>(maxpc-4):
           //|
-          dasm_put(Dst, 1030, SIZEOF_LENGTH, Dt8([2]), Dt8([3]), Dt8([0]), Dt8([1]), Dt4(->v64_op.low), sizeof(uint32_t), Dt8([0]), Dt8([1]), Dt4(->v64_op.hi), size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), SPROTO_TINTEGER, (maxpc-4));
+          dasm_put(Dst, 1026, SIZEOF_LENGTH, Dt8([2]), Dt8([3]), Dt8([0]), Dt8([1]), Dt4(->v64_op.low), sizeof(uint32_t), Dt8([0]), Dt8([1]), Dt4(->v64_op.hi), size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), SPROTO_TINTEGER, (maxpc-4));
 #line 552 "jitx64.desc"
         }break;
 
@@ -760,10 +758,10 @@ _gen_decode_type(struct sproto_type* st){
           //| add currentdata, SIZEOF_LENGTH
           //| mov r10, rax
           //| _call_cb DECODE_CB, DECODE_UD, f->name, f->type, 0, f->st, currentdata, r10
-          //| cmp rax, 0
-          //| jne =>(label_return_error)
+          //| test rax, rax
+          //| jnz =>(label_return_error)
           //|
-          dasm_put(Dst, 1131, Dt8([2]), Dt8([3]), Dt8([0]), Dt8([1]), SIZEOF_LENGTH, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)f->st), (unsigned int)(((uintptr_t)f->st)>>32), f->type, (label_return_error));
+          dasm_put(Dst, 1127, Dt8([2]), Dt8([3]), Dt8([0]), Dt8([1]), SIZEOF_LENGTH, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)f->st), (unsigned int)(((uintptr_t)f->st)>>32), f->type, (label_return_error));
 #line 564 "jitx64.desc"
         }break;
 
@@ -775,7 +773,7 @@ _gen_decode_type(struct sproto_type* st){
     //| _next_tag
     //|
     //|=>(maxpc-1):  // next field
-    dasm_put(Dst, 1217, (label_end), Dt8([0]), Dt8([1]), (maxpc-1));
+    dasm_put(Dst, 1211, (label_end), Dt8([0]), Dt8([1]), (maxpc-1));
 #line 574 "jitx64.desc"
   }
 
@@ -785,7 +783,7 @@ _gen_decode_type(struct sproto_type* st){
   //|
   //|=>(label_end):
   //| _return, 0
-  dasm_put(Dst, 1294, (label_return_error), (label_end));
+  dasm_put(Dst, 1288, (label_return_error), (label_end));
 #line 582 "jitx64.desc"
 
   return 1;
@@ -808,7 +806,7 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
   //| sub ea_size, SIZEOF_LENGTH
   //| mov ea_buffer, DATA
   //| add ea_buffer, SIZEOF_LENGTH
-  dasm_put(Dst, 1323, SIZEOF_LENGTH, (label_return_error), SIZEOF_LENGTH, SIZEOF_LENGTH);
+  dasm_put(Dst, 1317, SIZEOF_LENGTH, (label_return_error), SIZEOF_LENGTH, SIZEOF_LENGTH);
 #line 601 "jitx64.desc"
 
   int type = f->type & ~SPROTO_TARRAY;
@@ -816,9 +814,9 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
     case SPROTO_TINTEGER:
         //| _encode_integer_array ENCODE_CB, ENCODE_UD, f, ea_buffer, ea_size
         //| mov ea_buffer, rax
-        //| cmp ea_buffer, 0
-        //| je =>(label_return_error)
-        dasm_put(Dst, 1348, (unsigned int)((uintptr_t)f), (unsigned int)(((uintptr_t)f)>>32), (unsigned int)((uintptr_t)encode_integer_array), (unsigned int)(((uintptr_t)encode_integer_array)>>32), (label_return_error));
+        //| test ea_buffer, ea_buffer
+        //| jz =>(label_return_error)
+        dasm_put(Dst, 1342, (unsigned int)((uintptr_t)f), (unsigned int)(((uintptr_t)f)>>32), (unsigned int)((uintptr_t)encode_integer_array), (unsigned int)(((uintptr_t)encode_integer_array)>>32), (label_return_error));
 #line 609 "jitx64.desc"
       break;
 
@@ -826,16 +824,16 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
         //| mov ea_index, 1
         //|1:
         //| _call_cb ENCODE_CB, ENCODE_UD, f->name, type, ea_index, f->st, TMP_U_P, sizeof(uint32_t)
-        //| cmp eax, 0
-        //| jl =>(label_return_error)
+        //| test eax, eax
+        //| js =>(label_return_error)
         //| je >2
         //| cmp ea_size, 1
         //| jl =>(label_return_error)
         //| mov al, 1
         //| mov ea_buffer[0], al
         //| _gt_u32 rax
-        //| cmp rax, 0
-        //| jne >3
+        //| test rax, rax
+        //| jnz >3
         //| mov al, 0
         //| mov ea_buffer[0], al 
         //|3:
@@ -845,7 +843,7 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
         //| jmp <1 
         //|
         //|2:
-        dasm_put(Dst, 1397, sizeof(uint32_t), (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)f->st), (unsigned int)(((uintptr_t)f->st)>>32), type, (label_return_error), (label_return_error), DtA([0]), Dt4(->u32), DtA([0]));
+        dasm_put(Dst, 1390, sizeof(uint32_t), (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)f->st), (unsigned int)(((uintptr_t)f->st)>>32), type, (label_return_error), (label_return_error), DtA([0]), Dt4(->u32), DtA([0]));
 #line 634 "jitx64.desc"
       }break;
 
@@ -858,12 +856,12 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
         //| add ea_buffer, SIZEOF_LENGTH
         //| _call_cb ENCODE_CB, ENCODE_UD, f->name, type, ea_index, f->st, ea_buffer, ea_size
         //| mov r10d, eax
-        //| cmp r10d, 0
-        //| jl =>(label_return_error)
+        //| test r10d, r10d
+        //| js =>(label_return_error)
         //| je >2
         //| sub ea_buffer, SIZEOF_LENGTH
         //| _fill_size ea_buffer, r10d, eax
-        dasm_put(Dst, 1519, SIZEOF_LENGTH, (label_return_error), SIZEOF_LENGTH, SIZEOF_LENGTH, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)f->st), (unsigned int)(((uintptr_t)f->st)>>32), type, (label_return_error), SIZEOF_LENGTH);
+        dasm_put(Dst, 1508, SIZEOF_LENGTH, (label_return_error), SIZEOF_LENGTH, SIZEOF_LENGTH, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)f->st), (unsigned int)(((uintptr_t)f->st)>>32), type, (label_return_error), SIZEOF_LENGTH);
 #line 650 "jitx64.desc"
         //| add ea_buffer, SIZEOF_LENGTH
         //| add ea_buffer, r10
@@ -873,23 +871,23 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
         //|
         //|2:
         //| sub ea_buffer, SIZEOF_LENGTH
-        dasm_put(Dst, 1627, DtA([0]), DtA([1]), DtA([2]), DtA([3]), SIZEOF_LENGTH, SIZEOF_LENGTH, SIZEOF_LENGTH);
+        dasm_put(Dst, 1612, DtA([0]), DtA([1]), DtA([2]), DtA([3]), SIZEOF_LENGTH, SIZEOF_LENGTH, SIZEOF_LENGTH);
 #line 658 "jitx64.desc"
       }break;
   }
 
   //| sub ea_buffer, DATA
   //| sub ea_buffer, SIZEOF_LENGTH
-  //| cmp ea_buffer, 0
-  //| je >1
+  //| test ea_buffer, ea_buffer
+  //| jz >1
   //| _fill_size DATA, r15d, sz
   //| jmp >2
   //|1:
   //| mov sz, 0
-  dasm_put(Dst, 1715, SIZEOF_LENGTH, Dt2([0]), Dt2([1]), Dt2([2]), Dt2([3]), SIZEOF_LENGTH);
+  dasm_put(Dst, 1700, SIZEOF_LENGTH, Dt2([0]), Dt2([1]), Dt2([2]), Dt2([3]), SIZEOF_LENGTH);
 #line 669 "jitx64.desc"
   //|2:
-  dasm_put(Dst, 1823);
+  dasm_put(Dst, 1805);
 #line 670 "jitx64.desc"
 
   return 1;
@@ -909,7 +907,7 @@ _gen_encode_type(struct sproto_type* st){
   //| mov DATA, HEADER
   //| add DATA, header_sz
   //| sub ENCODE_SIZE, header_sz
-  dasm_put(Dst, 1832, header_sz, (label_return_error), header_sz, header_sz);
+  dasm_put(Dst, 1814, header_sz, (label_return_error), header_sz, header_sz);
 #line 688 "jitx64.desc"
 
   int size_u = sizeof(union tmp_u);
@@ -922,7 +920,7 @@ _gen_encode_type(struct sproto_type* st){
   //|.define lasttag, r13
   //| xor index, index
   //| mov lasttag, -1
-  dasm_put(Dst, 1854);
+  dasm_put(Dst, 1836);
 #line 699 "jitx64.desc"
 
   for(i=0; i<st->n; i++){
@@ -940,7 +938,7 @@ _gen_encode_type(struct sproto_type* st){
     //| xor r12, r12
     //| mov sz, -1
     //| xor value, value
-    dasm_put(Dst, 1869);
+    dasm_put(Dst, 1851);
 #line 715 "jitx64.desc"
 
     if(type & SPROTO_TARRAY){
@@ -952,15 +950,15 @@ _gen_encode_type(struct sproto_type* st){
         case SPROTO_TBOOLEAN:{
           //| _call_cb ENCODE_CB, ENCODE_UD, f->name, type, 0, NULL, TMP_U_P, size_u
           //| mov sz, eax
-          //| cmp sz, 0
-          //| jl =>(label_return_error)
-          //| je =>(maxpc-2)
+          //| test sz, sz
+          //| js =>(label_return_error)
+          //| jz =>(maxpc-2)
           //| cmp sz, sizeof(uint32_t)
           //| jne =>(maxpc-3)
           //|
             //| _gt_u32 value
-            //| cmp value, 0
-            //| jl =>(maxpc-4)
+            //| test value, value
+            //| js =>(maxpc-4)
             //| inc value
             //| sal value, 1
             //| mov sz, 2
@@ -968,8 +966,8 @@ _gen_encode_type(struct sproto_type* st){
             //| 
             //|=>(maxpc-4):
             //| _encode_integer value, DATA, ENCODE_SIZE, sz
-            dasm_put(Dst, 1889, size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), type, (label_return_error), (maxpc-2), sizeof(uint32_t), (maxpc-3), Dt4(->u32), (maxpc-4), (maxpc-5), (maxpc-4), SIZEOF_LENGTH + sizeof(uint32_t));
-            dasm_put(Dst, 1997, Dt2([4]), Dt2([5]), Dt2([6]), Dt2([7]), sizeof(uint32_t), sizeof(uint32_t), Dt2([0]), Dt2([1]), Dt2([2]), Dt2([3]), sizeof(uint32_t), SIZEOF_LENGTH);
+            dasm_put(Dst, 1871, size_u, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), type, (label_return_error), (maxpc-2), sizeof(uint32_t), (maxpc-3), Dt4(->u32), (maxpc-4), (maxpc-5), (maxpc-4), SIZEOF_LENGTH + sizeof(uint32_t));
+            dasm_put(Dst, 1975, Dt2([4]), Dt2([5]), Dt2([6]), Dt2([7]), sizeof(uint32_t), sizeof(uint32_t), Dt2([0]), Dt2([1]), Dt2([2]), Dt2([3]), sizeof(uint32_t), SIZEOF_LENGTH);
 #line 741 "jitx64.desc"
             //| xor value, value
             //| jmp =>(maxpc-5)
@@ -979,25 +977,25 @@ _gen_encode_type(struct sproto_type* st){
           //| jne =>(label_return_error)
           //| _gt_u64, value64
           //| _encode_uint64 value64, DATA, ENCODE_SIZE, sz
-          dasm_put(Dst, 2084, (maxpc-5), (maxpc-3), sizeof(uint64_t), (label_return_error), Dt4(->u64), SIZEOF_LENGTH + sizeof(uint64_t), Dt2([4]), Dt2([5]));
-          dasm_put(Dst, 2172, Dt2([6]), Dt2([7]), Dt2([8]), Dt2([9]), Dt2([10]), Dt2([11]), sizeof(uint64_t), sizeof(uint64_t), Dt2([0]), Dt2([1]), Dt2([2]), Dt2([3]), sizeof(uint64_t), SIZEOF_LENGTH);
+          dasm_put(Dst, 2060, (maxpc-5), (maxpc-3), sizeof(uint64_t), (label_return_error), Dt4(->u64), SIZEOF_LENGTH + sizeof(uint64_t), Dt2([4]), Dt2([5]));
+          dasm_put(Dst, 2148, Dt2([6]), Dt2([7]), Dt2([8]), Dt2([9]), Dt2([10]), Dt2([11]), sizeof(uint64_t), sizeof(uint64_t), Dt2([0]), Dt2([1]), Dt2([2]), Dt2([3]), sizeof(uint64_t), SIZEOF_LENGTH);
 #line 749 "jitx64.desc"
           //| xor value64, value64
-          dasm_put(Dst, 2279);
+          dasm_put(Dst, 2253);
 #line 750 "jitx64.desc"
         }break;
 
         case SPROTO_TSTRING:{
           //| _encode_buffer ENCODE_CB, ENCODE_UD, SPROTO_TSTRING, f->name, NULL, DATA, ENCODE_SIZE, sz
-          dasm_put(Dst, 2325, SIZEOF_LENGTH, SIZEOF_LENGTH, SIZEOF_LENGTH, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), SPROTO_TSTRING, SIZEOF_LENGTH, SIZEOF_LENGTH, Dt2([0]), Dt2([1]), Dt2([2]), Dt2([3]));
-          dasm_put(Dst, 2448, SIZEOF_LENGTH);
+          dasm_put(Dst, 2299, SIZEOF_LENGTH, SIZEOF_LENGTH, SIZEOF_LENGTH, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)NULL), (unsigned int)(((uintptr_t)NULL)>>32), SPROTO_TSTRING, SIZEOF_LENGTH, SIZEOF_LENGTH, Dt2([0]), Dt2([1]), Dt2([2]), Dt2([3]));
+          dasm_put(Dst, 2420, SIZEOF_LENGTH);
 #line 754 "jitx64.desc"
         }break;
 
         case SPROTO_TSTRUCT: {
           //| _encode_buffer ENCODE_CB, ENCODE_UD, SPROTO_TSTRUCT, f->name, f->st, DATA, ENCODE_SIZE, sz
-          dasm_put(Dst, 2325, SIZEOF_LENGTH, SIZEOF_LENGTH, SIZEOF_LENGTH, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)f->st), (unsigned int)(((uintptr_t)f->st)>>32), SPROTO_TSTRUCT, SIZEOF_LENGTH, SIZEOF_LENGTH, Dt2([0]), Dt2([1]), Dt2([2]), Dt2([3]));
-          dasm_put(Dst, 2448, SIZEOF_LENGTH);
+          dasm_put(Dst, 2299, SIZEOF_LENGTH, SIZEOF_LENGTH, SIZEOF_LENGTH, (unsigned int)((uintptr_t)f->name), (unsigned int)(((uintptr_t)f->name)>>32), (unsigned int)((uintptr_t)f->st), (unsigned int)(((uintptr_t)f->st)>>32), SPROTO_TSTRUCT, SIZEOF_LENGTH, SIZEOF_LENGTH, Dt2([0]), Dt2([1]), Dt2([2]), Dt2([3]));
+          dasm_put(Dst, 2420, SIZEOF_LENGTH);
 #line 758 "jitx64.desc"
         }break;
 
@@ -1005,16 +1003,16 @@ _gen_encode_type(struct sproto_type* st){
           return 0;
       }
       //|=>(maxpc-5): // switch end
-      dasm_put(Dst, 598, (maxpc-5));
+      dasm_put(Dst, 596, (maxpc-5));
 #line 764 "jitx64.desc"
     }
     
-    //| cmp sz, 0
-    //| jl =>(label_return_error)
-    //| je =>(maxpc-2)
+    //| test sz, sz
+    //| js =>(label_return_error)
+    //| jz =>(maxpc-2)
     //|
-      //| cmp value, 0
-      //| jne =>(maxpc-7)
+      //| test value, value
+      //| jnz =>(maxpc-7)
       //| add DATA, sz_64
       //| sub ENCODE_SIZE, sz_64
       //|=>(maxpc-7): 
@@ -1044,7 +1042,7 @@ _gen_encode_type(struct sproto_type* st){
       //|
       //|=>(maxpc-6):
       //| inc index
-      dasm_put(Dst, 2504, (label_return_error), (maxpc-2), (maxpc-7), (maxpc-7), SIZEOF_HEADER, _tag, (maxpc-6), (maxpc-8), (label_return_error), (maxpc-8), Dt3([0]), Dt3([1]), SIZEOF_FIELD, (maxpc-6));
+      dasm_put(Dst, 2476, (label_return_error), (maxpc-2), (maxpc-7), (maxpc-7), SIZEOF_HEADER, _tag, (maxpc-6), (maxpc-8), (label_return_error), (maxpc-8), Dt3([0]), Dt3([1]), SIZEOF_FIELD, (maxpc-6));
 #line 801 "jitx64.desc"
       //| mov eax, value
       //| mov RECORD[0], al
@@ -1053,7 +1051,7 @@ _gen_encode_type(struct sproto_type* st){
       //| mov lasttag, _tag
     //| 
     //|=>(maxpc-2): // for next
-    dasm_put(Dst, 2618, Dt3([0]), Dt3([1]), _tag, (maxpc-2));
+    dasm_put(Dst, 2586, Dt3([0]), Dt3([1]), _tag, (maxpc-2));
 #line 808 "jitx64.desc"
   }
   //| mov rax, index
@@ -1065,7 +1063,7 @@ _gen_encode_type(struct sproto_type* st){
   //| sub datasz, HEADER
   //| sub datasz, header_sz
   //| mov DATA, HEADER
-  dasm_put(Dst, 2642, Dt1([0]), Dt1([1]), header_sz);
+  dasm_put(Dst, 2610, Dt1([0]), Dt1([1]), header_sz);
 #line 818 "jitx64.desc"
 
   //| add DATA, header_sz
@@ -1091,7 +1089,7 @@ _gen_encode_type(struct sproto_type* st){
   //|
   //|=>(label_return_error):
   //| _return, -1
-  dasm_put(Dst, 2673, header_sz, st->maxn, (maxpc-9), SIZEOF_HEADER, (unsigned int)((uintptr_t)memmove), (unsigned int)(((uintptr_t)memmove)>>32), (maxpc-9), SIZEOF_HEADER, (label_return_error));
+  dasm_put(Dst, 2641, header_sz, st->maxn, (maxpc-9), SIZEOF_HEADER, (unsigned int)((uintptr_t)memmove), (unsigned int)(((uintptr_t)memmove)>>32), (maxpc-9), SIZEOF_HEADER, (label_return_error));
 #line 842 "jitx64.desc"
 
   return 1;
@@ -1102,12 +1100,12 @@ _gen_decode(struct sproto_type* st){
   _new_env(Dst, actions);
 
   //| _pre
-  dasm_put(Dst, 2750, sizeof(union tmp_u));
+  dasm_put(Dst, 2718, sizeof(union tmp_u));
    int success = _gen_decode_type(st);
 #line 852 "jitx64.desc"
   //|
   //| _ret
-  dasm_put(Dst, 2768, sizeof(union tmp_u));
+  dasm_put(Dst, 2736, sizeof(union tmp_u));
 #line 854 "jitx64.desc"
   
   void* ret = (success)?(_jitcode_new(Dst)):(NULL);  
@@ -1120,12 +1118,12 @@ _gen_encode(struct sproto_type* st){
   _new_env(Dst, actions);
 
   //| _pre
-  dasm_put(Dst, 2750, sizeof(union tmp_u));
+  dasm_put(Dst, 2718, sizeof(union tmp_u));
    int success =  _gen_encode_type(st);
 #line 866 "jitx64.desc"
   //|
   //| _ret
-  dasm_put(Dst, 2768, sizeof(union tmp_u));
+  dasm_put(Dst, 2736, sizeof(union tmp_u));
 #line 868 "jitx64.desc"
 
   void* ret = (success)?(_jitcode_new(Dst)):(NULL);

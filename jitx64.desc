@@ -91,9 +91,9 @@ static void* labels[SPROTO_CODE__MAX];
 
 |.macro _fill_size, data, sz, R_out
 | mov eax, sz
-| cmp eax, 0
-| jl >4
-| je >5
+| test eax, eax
+| js >4
+| jz >5
 | mov eax, sz
 | mov data[0], al
 | shr eax, 8
@@ -388,8 +388,8 @@ _gen_decode_array(struct field* f, unsigned int label_return_error){
       | mov currentdata, tmp64
       | add tmp64, rax
       | _call_cb DECODE_CB, DECODE_UD, f->name, type, rbx, f->st, currentdata, rax
-      | cmp eax, 0
-      | jne =>(label_return_error)
+      | test eax, eax
+      | jnz =>(label_return_error)
       | inc rbx
       | jmp <5
 
@@ -512,8 +512,8 @@ _gen_decode_type(struct sproto_type* st){
       switch(type){
         case SPROTO_TINTEGER:
         case SPROTO_TBOOLEAN: {
-          | cmp d_value, 0
-          | jl =>(maxpc-3)
+          | test d_value, d_value
+          | js =>(maxpc-3)
           | _st_u64 d_value64
           | _call_cb DECODE_CB,  DECODE_UD, f->name, f->type, 0, NULL, TMP_U_P, size_u
           | jmp =>(maxpc-4) 
@@ -558,8 +558,8 @@ _gen_decode_type(struct sproto_type* st){
           | add currentdata, SIZEOF_LENGTH
           | mov r10, rax
           | _call_cb DECODE_CB, DECODE_UD, f->name, f->type, 0, f->st, currentdata, r10
-          | cmp rax, 0
-          | jne =>(label_return_error)
+          | test rax, rax
+          | jnz =>(label_return_error)
           |
         }break;
 
@@ -604,24 +604,24 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
     case SPROTO_TINTEGER:
         | _encode_integer_array ENCODE_CB, ENCODE_UD, f, ea_buffer, ea_size
         | mov ea_buffer, rax
-        | cmp ea_buffer, 0
-        | je =>(label_return_error)
+        | test ea_buffer, ea_buffer
+        | jz =>(label_return_error)
       break;
 
     case SPROTO_TBOOLEAN:{
         | mov ea_index, 1
         |1:
         | _call_cb ENCODE_CB, ENCODE_UD, f->name, type, ea_index, f->st, TMP_U_P, sizeof(uint32_t)
-        | cmp eax, 0
-        | jl =>(label_return_error)
+        | test eax, eax
+        | js =>(label_return_error)
         | je >2
         | cmp ea_size, 1
         | jl =>(label_return_error)
         | mov al, 1
         | mov ea_buffer[0], al
         | _gt_u32 rax
-        | cmp rax, 0
-        | jne >3
+        | test rax, rax
+        | jnz >3
         | mov al, 0
         | mov ea_buffer[0], al 
         |3:
@@ -642,8 +642,8 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
         | add ea_buffer, SIZEOF_LENGTH
         | _call_cb ENCODE_CB, ENCODE_UD, f->name, type, ea_index, f->st, ea_buffer, ea_size
         | mov r10d, eax
-        | cmp r10d, 0
-        | jl =>(label_return_error)
+        | test r10d, r10d
+        | js =>(label_return_error)
         | je >2
         | sub ea_buffer, SIZEOF_LENGTH
         | _fill_size ea_buffer, r10d, eax
@@ -660,8 +660,8 @@ _gen_encode_array(struct field* f, unsigned int label_return_error){
 
   | sub ea_buffer, DATA
   | sub ea_buffer, SIZEOF_LENGTH
-  | cmp ea_buffer, 0
-  | je >1
+  | test ea_buffer, ea_buffer
+  | jz >1
   | _fill_size DATA, r15d, sz
   | jmp >2
   |1:
@@ -722,15 +722,15 @@ _gen_encode_type(struct sproto_type* st){
         case SPROTO_TBOOLEAN:{
           | _call_cb ENCODE_CB, ENCODE_UD, f->name, type, 0, NULL, TMP_U_P, size_u
           | mov sz, eax
-          | cmp sz, 0
-          | jl =>(label_return_error)
-          | je =>(maxpc-2)
+          | test sz, sz
+          | js =>(label_return_error)
+          | jz =>(maxpc-2)
           | cmp sz, sizeof(uint32_t)
           | jne =>(maxpc-3)
           |
             | _gt_u32 value
-            | cmp value, 0
-            | jl =>(maxpc-4)
+            | test value, value
+            | js =>(maxpc-4)
             | inc value
             | sal value, 1
             | mov sz, 2
@@ -763,12 +763,12 @@ _gen_encode_type(struct sproto_type* st){
       |=>(maxpc-5): // switch end
     }
     
-    | cmp sz, 0
-    | jl =>(label_return_error)
-    | je =>(maxpc-2)
+    | test sz, sz
+    | js =>(label_return_error)
+    | jz =>(maxpc-2)
     |
-      | cmp value, 0
-      | jne =>(maxpc-7)
+      | test value, value
+      | jnz =>(maxpc-7)
       | add DATA, sz_64
       | sub ENCODE_SIZE, sz_64
       |=>(maxpc-7): 
