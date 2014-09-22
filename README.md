@@ -9,7 +9,7 @@ you can set macro `SPROTO_JIT` to decide use the jit or interpreter mode at [spr
 ## require
 currently only support POSIX X64.
 
-## beachmack
+## benchmack
 my cpu is i5@2.4GHz 
 the sproto schema:
 ```
